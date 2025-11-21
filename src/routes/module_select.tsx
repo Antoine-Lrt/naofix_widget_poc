@@ -1,0 +1,168 @@
+import {
+  AccessTimeOutlined,
+  AirplaneTicket,
+  ArrowForward,
+  ArrowRight,
+  AssignmentTurnedInOutlined,
+  CalendarMonthOutlined,
+  CheckBoxOutlined,
+  EmailOutlined,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  darken,
+  Grid,
+  lighten,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/module_select")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const navigate = useNavigate();
+  const modules = [
+    {
+      id: "messaging_module",
+      name: "Messagerie",
+      icon: EmailOutlined,
+      description: "Gestion des emails et communications",
+      color: "#2563eb",
+    },
+    {
+      id: "helpdesk_module",
+      name: "Helpdesk",
+      icon: AssignmentTurnedInOutlined,
+      description: "Support et tickets clients",
+      color: "#ffa406ff",
+    },
+    {
+      id: "resa_module",
+      name: "Réservation",
+      icon: CalendarMonthOutlined,
+      description: "Gestion des réservations et calendriers",
+      color: "#ee0008ff",
+    },
+    {
+      id: "tasks_module",
+      name: "Tâches",
+      icon: CheckBoxOutlined,
+      description: "Gestions des tâches et projets",
+      color: "#008709ff",
+    },
+    {
+      id: "entry_time_module",
+      name: "Saisie de temps",
+      icon: AccessTimeOutlined,
+      description: "Suivi du temps de travail",
+      color: "#c600b5ff",
+    },
+  ];
+
+  const handleClick = () => {
+    navigate({ to: "/layout_creator" });
+  };
+  return (
+    <Box gap={4}>
+      <Box textAlign="center" p={4}>
+        <Typography variant="h4" fontWeight="bold">
+          Sélectionnez un module
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Choisissez le module pour lequel vous souhaitez créer un nouvelle vue
+        </Typography>
+      </Box>
+      <Grid container spacing={4}>
+        {modules.map((module, index) => (
+          <Grid size={3} key={index}>
+            <Card
+              elevation={0}
+              sx={{
+                height: "100%",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                cursor: "pointer",
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 4,
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                  borderColor: module.color,
+                },
+              }}
+              onClick={handleClick}
+            >
+              <CardContent
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box display="flex" alignItems="center" gap={2} mb={2}>
+                  {(() => {
+                    const Icon = module.icon;
+                    return (
+                      <Box
+                        sx={{
+                          bgcolor: lighten(module.color, 0.9),
+                          color: darken(module.color, 0.5),
+                          width: 48,
+                          height: 48,
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Icon fontSize="medium" />
+                      </Box>
+                    );
+                  })()}
+                  <Typography variant="h6">{module.name}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {module.description}
+                  </Typography>
+                </Box>
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="space-between"
+                  color={module.color}
+                  mt={4}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover .arrow-icon": {
+                      transform: "translateX(4px)",
+                    },
+                    ".arrow-icon": {
+                      transition: "transform 0.2s",
+                      display: "inline-flex",
+                    },
+                  }}
+                >
+                  <Typography variant="body2" color="inherit" fontWeight={600}>
+                    Créer une vue
+                  </Typography>
+                  <ArrowForward className="arrow-icon" fontSize="small" />
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}

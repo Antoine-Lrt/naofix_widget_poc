@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as NotavailableRouteImport } from './routes/notavailable'
+import { Route as Module_selectRouteImport } from './routes/module_select'
+import { Route as Layout_creatorRouteImport } from './routes/layout_creator'
 import { Route as IndexRouteImport } from './routes/index'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const NotavailableRoute = NotavailableRouteImport.update({
+  id: '/notavailable',
+  path: '/notavailable',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Module_selectRoute = Module_selectRouteImport.update({
+  id: '/module_select',
+  path: '/module_select',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Layout_creatorRoute = Layout_creatorRouteImport.update({
+  id: '/layout_creator',
+  path: '/layout_creator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +37,59 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/layout_creator': typeof Layout_creatorRoute
+  '/module_select': typeof Module_selectRoute
+  '/notavailable': typeof NotavailableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/layout_creator': typeof Layout_creatorRoute
+  '/module_select': typeof Module_selectRoute
+  '/notavailable': typeof NotavailableRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/layout_creator': typeof Layout_creatorRoute
+  '/module_select': typeof Module_selectRoute
+  '/notavailable': typeof NotavailableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths: '/' | '/layout_creator' | '/module_select' | '/notavailable'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to: '/' | '/layout_creator' | '/module_select' | '/notavailable'
+  id: '__root__' | '/' | '/layout_creator' | '/module_select' | '/notavailable'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  Layout_creatorRoute: typeof Layout_creatorRoute
+  Module_selectRoute: typeof Module_selectRoute
+  NotavailableRoute: typeof NotavailableRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/notavailable': {
+      id: '/notavailable'
+      path: '/notavailable'
+      fullPath: '/notavailable'
+      preLoaderRoute: typeof NotavailableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/module_select': {
+      id: '/module_select'
+      path: '/module_select'
+      fullPath: '/module_select'
+      preLoaderRoute: typeof Module_selectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/layout_creator': {
+      id: '/layout_creator'
+      path: '/layout_creator'
+      fullPath: '/layout_creator'
+      preLoaderRoute: typeof Layout_creatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  Layout_creatorRoute: Layout_creatorRoute,
+  Module_selectRoute: Module_selectRoute,
+  NotavailableRoute: NotavailableRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
