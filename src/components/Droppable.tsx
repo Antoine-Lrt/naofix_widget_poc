@@ -24,7 +24,6 @@ export function Droppable(props) {
   };
 
   const { column, columnIndex, rowIndex, children } = props;
-  console.log("🚀 ~ Droppable.tsx:28 ~ Droppable ~ column:", column);
 
   const widthOptionsMap = {
     xs: { label: "Étroite", value: "xs" },
@@ -75,19 +74,17 @@ export function Droppable(props) {
         <Chip
           id="width-button"
           clickable
-          label={widthOptionsMap[column.width].label}
+          label={
+            column.width && widthOptionsMap[column.width]
+              ? widthOptionsMap[column.width].label
+              : "Width"
+          }
           size="small"
           aria-controls={open ? "basic-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
           onClick={handleClick}
-          icon={
-            <Height
-              sx={{
-                rotate: "90deg",
-              }}
-            />
-          }
+          icon={<Height sx={{ rotate: "90deg" }} />}
         />
       </Box>
       <Menu
@@ -103,14 +100,14 @@ export function Droppable(props) {
       >
         {Object.values(widthOptionsMap).map((option) => (
           <MenuItem
-            key={option.value}
+            key={option?.value}
             onClick={() => {
               updateColumnWidth(rowIndex, columnIndex, option.value);
 
               handleClose();
             }}
           >
-            {option.label}
+            {option?.label}
           </MenuItem>
         ))}
       </Menu>
