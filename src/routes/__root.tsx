@@ -7,13 +7,34 @@ import {
   createRootRoute,
 } from "@tanstack/react-router";
 import { CacheProvider } from "@emotion/react";
-import { Container, CssBaseline, Divider, ThemeProvider } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import createCache from "@emotion/cache";
 import fontsourceVariableRobotoCss from "@fontsource-variable/roboto?url";
 import React from "react";
 import { getTheme } from "~/setup/theme";
 import { Header } from "~/components/Header";
 import { useThemeMode } from "~/store/themeStore";
+import { closeDrawer, useDrawer } from "~/store/layoutStore";
+import {
+  ArrowForward,
+  ArrowForwardIos,
+  ArrowRight,
+  KeyboardArrowRight,
+} from "@mui/icons-material";
+import { Draggable } from "~/components/Draggable";
+import { DndContext } from "@dnd-kit/core";
+import { over } from "lodash";
+import { Droppable } from "~/components/Droppable";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -44,6 +65,27 @@ function Providers({ children }: { children: React.ReactNode }) {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const drawerWidth = 300;
+  const isOpen = useDrawer();
+  const draggableMarkup = (
+    <>
+      <Draggable id="widget-1">Widget 1</Draggable>
+      <Draggable id="widget-2">Widget 2</Draggable>
+      <Draggable id="widget-3">Widget 3</Draggable>
+    </>
+  );
+
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    setPositions((prev) => ({
+      ...prev,
+      [active.id]: over.id,
+    }));
+  }
+
   return (
     <html>
       <head>
@@ -51,11 +93,43 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Providers>
-          <Header />
-          <Divider />
-          <Container component="main" sx={{ paddingBlock: 4 }}>
-            {children}
-          </Container>
+          <DndContext onDragEnd={handleDragEnd}>
+            <Header drawerIsOpen={isOpen} />
+            <Divider />
+            <Container component="main" sx={{ paddingBlock: 4 }}>
+              {children}
+            </Container>
+            <Drawer
+              sx={{
+                width: drawerWidth,
+                flexShrink: 0,
+                "& .MuiDrawer-paper": {
+                  width: drawerWidth,
+                },
+              }}
+              variant="persistent"
+              anchor="right"
+              open={isOpen}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <IconButton
+                  sx={{
+                    "&:hover": {
+                      bgcolor: "transparent",
+                      color: "primary.main",
+                    },
+                  }}
+                  onClick={closeDrawer}
+                >
+                  <KeyboardArrowRight />
+                </IconButton>
+                <Typography variant="h6" sx={{ color: "white" }}>
+                  Widgets
+                </Typography>
+              </Box>
+              <Divider sx={{ marginBottom: 2, marginTop: 1 }} />
+            </Drawer>
+          </DndContext>
         </Providers>
 
         <TanStackRouterDevtools position="bottom-right" />

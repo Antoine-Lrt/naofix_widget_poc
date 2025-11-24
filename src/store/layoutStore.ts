@@ -11,13 +11,9 @@ export interface LayoutRow {
   columns: LayoutColumn[];
 }
 
-// export interface LayoutCell {
-//   id: string;
-//   row: LayoutRow[];
-//   rowIndex: number;
-//   columnIndex: number;
-//   widgets: string[];
-// }
+interface DrawerState {
+  isOpen: boolean;
+}
 
 export interface ViewStateType {
   id: string;
@@ -32,18 +28,8 @@ export interface ViewStateType {
 
 interface LayoutStoreState {
   currentView: ViewStateType | null;
+  drawer: DrawerState;
 }
-
-// const createEmptyGrid = (rows: number, columns: number): LayoutCell[][] => {
-//   return Array.from({ length: rows }, (_, rowIndex) =>
-//     Array.from({ length: columns }, (_, columnIndex) => ({
-//       id: `cell-${rowIndex}-${columnIndex}`,
-//       rowIndex,
-//       columnIndex,
-//       widgets: [],
-//     }))
-//   );
-// };
 
 const initialLayoutState: LayoutStoreState = {
   currentView: {
@@ -68,20 +54,23 @@ const initialLayoutState: LayoutStoreState = {
     ],
     rowHeights: [30, 30],
   },
+
+  drawer: {
+    isOpen: false,
+  },
 };
 
 const layoutStore = new Store<LayoutStoreState>(initialLayoutState);
 
 //
 // ---------- GETTERS ----------
-//
 export const getcurrentView = () => layoutStore.state.currentView;
 
 //
 // ---------- ACTIONS ----------
 //
 
-export const loadLayout = (layout: PageLayoutState) => {
+export const loadLayout = (layout: ViewStateType) => {
   layoutStore.setState({ currentView: layout });
 };
 
@@ -90,25 +79,23 @@ export const updateLayoutRows = (rows: number) => {
   if (!layout) return;
 
   const newRowsData: LayoutRow[] = Array.from({ length: rows }, (_, i) => {
-    if (i < layout.rows.length) {
+    if (i < (layout.rows?.length ?? 0)) {
       return layout.rows[i];
     }
     return {
       id: `row-${i}`,
       columns: [
-        { id: "column-0", width: undefined, widgets: [] },
-        { id: "column-1", width: undefined, widgets: [] },
-        { id: "column-2", width: undefined, widgets: [] },
+        { id: `column-${i}-0`, width: "md", widgets: [] },
+        { id: `column-${i}-1`, width: "md", widgets: [] },
+        { id: `column-${i}-2`, width: "md", widgets: [] },
       ],
     };
   });
 
-  // const height = 50 / rows;
-  // const newHeights = Array(rows).fill(height);
-
   layoutStore.setState({
     currentView: {
       ...layout,
+      row_count: rows,
       rows: newRowsData,
     },
   });
@@ -152,24 +139,48 @@ export const updateColumnWidth = (
   if (!layout) return;
   const row = layout.rows[rowIndex];
   if (!row) return;
-  const column = row.columns[columnIndex];
-  if (!column) return;
+
   const newColumnData: LayoutColumn[] = row.columns.map((c, idx) =>
     idx === columnIndex ? { ...c, width } : c
   );
+
   const newRows = layout.rows.map((r, idx) =>
     idx === rowIndex ? { ...r, columns: newColumnData } : r
   );
+
   layoutStore.setState({
     currentView: { ...layout, rows: newRows },
   });
 };
 
 //
-// ---------- HOOKS (selectors) ----------
+// ---------- DRAWER ACTIONS ----------
+//
+
+export const openDrawer = () => {
+  layoutStore.setState((state) => ({
+    ...state,
+    drawer: { isOpen: true },
+  }));
+};
+
+export const closeDrawer = () => {
+  layoutStore.setState((state) => ({
+    ...state,
+    drawer: { isOpen: false },
+  }));
+};
+
+//
+// ---------- HOOKS ----------
 //
 
 export const useLayoutStore = () => useStore(layoutStore);
 
 export const usecurrentView = () =>
   useStore(layoutStore, (state) => state.currentView);
+
+export const useDrawer = () => {
+  const drawer = useStore(layoutStore, (state) => state.drawer);
+  return drawer?.isOpen ?? false;
+};

@@ -2,27 +2,37 @@ import {
   AppBar,
   Box,
   Breadcrumbs,
+  Button,
   Chip,
   IconButton,
   Link,
+  List,
   Menu,
   MenuItem,
   Stack,
-  TableRow,
   Toolbar,
   Typography,
   css,
   styled,
 } from "@mui/material";
 import { CustomLink } from "./CustomLink";
-import { Brightness4, Brightness7, TableRows } from "@mui/icons-material";
+import {
+  Article,
+  Brightness4,
+  Brightness7,
+  ViewStream,
+  ViewModule,
+} from "@mui/icons-material";
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
 import React from "react";
 import {
+  openDrawer,
   updateColumnWidth,
   updateLayoutRows,
   useLayoutStore,
 } from "~/store/layoutStore";
+import { useMatchRoute } from "@tanstack/react-router";
+import { modules } from "~/mock";
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme, disabled }) => css`
@@ -58,10 +68,21 @@ const breadcrumbs = [
   </Typography>,
 ];
 
-const isLayoutCreator = true;
-
 const CreatorPageToolComponent = () => {
   const [currentViewType, setCurrentViewType] = React.useState<string>("list");
+
+  const [currentModule, setCurrentModule] = React.useState<string>("");
+  const [currentModuleMenuAnchorEl, setCurrentModuleMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const currentModuleMenuOpen = Boolean(currentModuleMenuAnchorEl);
+  const handleModuleMenuButtonClick = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    setCurrentModuleMenuAnchorEl(event.currentTarget);
+  };
+  const handleModuleMenuButtonClose = () => {
+    setCurrentModuleMenuAnchorEl(null);
+  };
   const [columnMenuAnchorEl, setColumnMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const columnMenuOpen = Boolean(columnMenuAnchorEl);
@@ -71,6 +92,7 @@ const CreatorPageToolComponent = () => {
   const handleViewTypeButtonClose = () => {
     setColumnMenuAnchorEl(null);
   };
+
   const [rowMenuAnchorEl, setRowMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const rowMenuOpen = Boolean(rowMenuAnchorEl);
@@ -82,28 +104,86 @@ const CreatorPageToolComponent = () => {
   };
 
   const { currentView } = useLayoutStore();
-  console.log(
-    "🚀 ~ Header.tsx:71 ~ CreatorPageToolComponent ~ currentView:",
-    currentView
-  );
 
-  const { rows_count } = currentView;
+  const { row_count } = currentView;
 
   const rowsOptionsMap = [1, 2, 3, 4];
+  const modulesOptionsMap = modules.map((module) => module.name);
+
+  const viewTypeIconMap = {
+    list: <List />,
+    detail: <Article />,
+  };
 
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" alignItems="center" spacing={1}>
+      <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          disableElevation
+          onClick={openDrawer}
+        >
+          Widgets
+        </Button>
+      </Box>
+      <Box>
+        <Chip
+          id="module-selector-button"
+          clickable
+          label={currentModule ? currentModule : "Modules"}
+          size="small"
+          aria-controls={currentModuleMenuOpen ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={currentModuleMenuOpen ? "true" : undefined}
+          onClick={handleModuleMenuButtonClick}
+          icon={<ViewModule />}
+          sx={{
+            bgcolor: "transparent",
+            "&:hover": {
+              bgcolor: "secondary",
+            },
+          }}
+        />
+        <Menu
+          id="module-select-menu"
+          anchorEl={currentModuleMenuAnchorEl}
+          open={currentModuleMenuOpen}
+          onClose={handleModuleMenuButtonClose}
+          slotProps={{
+            list: {
+              "aria-labelledby": "basic-button",
+            },
+          }}
+        >
+          {modulesOptionsMap &&
+            modulesOptionsMap.map((module, index) => (
+              <MenuItem
+                key={index}
+                data-value={module}
+                onClick={(e) => {
+                  const value = e.currentTarget.dataset.value;
+                  setCurrentModule(value || "");
+                  handleModuleMenuButtonClose();
+                }}
+              >
+                {module}
+              </MenuItem>
+            ))}
+        </Menu>
+      </Box>
       <Box>
         <Chip
           id="row-selector-button"
           clickable
-          label={rows_count ? `${rows_count} Lignes` : "Lignes"}
+          label={row_count ? `${row_count} Lignes` : "Lignes"}
           size="small"
           aria-controls={rowMenuOpen ? "basic-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={rowMenuOpen ? "true" : undefined}
           onClick={handleClick}
-          icon={<TableRows />}
+          icon={<ViewStream />}
           sx={{
             bgcolor: "transparent",
             "&:hover": {
@@ -148,7 +228,7 @@ const CreatorPageToolComponent = () => {
           aria-haspopup="true"
           aria-expanded={columnMenuOpen ? "true" : undefined}
           onClick={handleViewTypeButtonClick}
-          icon={<TableRow />}
+          icon={viewTypeIconMap[currentViewType.toLocaleLowerCase()]}
         />
         <Menu
           id="row-select-menu"
@@ -169,54 +249,62 @@ const CreatorPageToolComponent = () => {
   );
 };
 
-export function Header() {
+export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
   const { mode } = useThemeMode();
-  // const matchRoute = useMatchRoute();
-  // const isLayoutCreator = matchRoute({ to: "/layout_creator" });
-  // console.log("🚀 ~ Header.tsx:63 ~ Header ~ result:", isLayoutCreator);
+  const matchRoute = useMatchRoute();
+  const isLayoutCreator = matchRoute({ to: "/layout_creator" });
 
-  const logoContanierStyle = 200;
+  const logoContainerStyle = 200;
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={0} sx={{ bgcolor: "transparent" }}>
-        <Toolbar sx={{ gap: 2 }}>
-          <Stack sx={{ flexGrow: 1 }} display="flex">
-            <Box display="flex" alignItems="center" gap={2}>
-              <Box sx={{ width: logoContanierStyle }}>
-                <Typography variant="h6" color="text.primary" component="div">
-                  NaoFix Widget POC
-                </Typography>
-              </Box>
-              <Stack>
-                <Box display="flex" gap={1}>
-                  <StyledCustomLink disabled to="/notavailable">
-                    Messagerie
-                  </StyledCustomLink>
-                  <StyledCustomLink disabled to="/notavailable">
-                    Helpdesk
-                  </StyledCustomLink>
-                  <StyledCustomLink disabled to="/notavailable">
-                    Intervention
-                  </StyledCustomLink>
-                  <StyledCustomLink disabled to="/notavailable">
-                    Configuration
-                  </StyledCustomLink>
-                </Box>
-              </Stack>
+    <AppBar position="static" elevation={0} sx={{ bgcolor: "transparent" }}>
+      <Toolbar
+        sx={{
+          gap: 2,
+          marginRight: drawerIsOpen ? 30 : 0,
+          transition: "margin-right 0.3s",
+        }}
+      >
+        <Stack sx={{ flexGrow: 1 }} display="flex">
+          <Box display="flex" alignItems="center" gap={2}>
+            <Box sx={{ width: logoContainerStyle }}>
+              <StyledCustomLink
+                to="/"
+                variant="h6"
+                color="text.primary"
+                component="div"
+              >
+                NaoFix Widget POC
+              </StyledCustomLink>
             </Box>
-          </Stack>
-          {isLayoutCreator ? (
-            <CreatorPageToolComponent />
-          ) : (
-            <StyledCustomLink to="/module_select">
-              Création de page
-            </StyledCustomLink>
-          )}
-          <IconButton onClick={toggleThemeMode}>
-            {mode === "light" ? <Brightness4 /> : <Brightness7 />}
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    </Box>
+            <Stack>
+              <Box display="flex" gap={1}>
+                <StyledCustomLink disabled to="/notavailable">
+                  Messagerie
+                </StyledCustomLink>
+                <StyledCustomLink disabled to="/notavailable">
+                  Helpdesk
+                </StyledCustomLink>
+                <StyledCustomLink disabled to="/notavailable">
+                  Intervention
+                </StyledCustomLink>
+                <StyledCustomLink disabled to="/notavailable">
+                  Configuration
+                </StyledCustomLink>
+              </Box>
+            </Stack>
+          </Box>
+        </Stack>
+        {isLayoutCreator ? (
+          <CreatorPageToolComponent />
+        ) : (
+          <StyledCustomLink to="/module_select">
+            Création de page
+          </StyledCustomLink>
+        )}
+        <IconButton onClick={toggleThemeMode}>
+          {mode === "light" ? <Brightness4 /> : <Brightness7 />}
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
 }

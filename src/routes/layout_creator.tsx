@@ -4,9 +4,11 @@ import { useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import {
   Box,
+  Chip,
   FormControl,
   Grid,
   InputLabel,
+  Menu,
   MenuItem,
   Select,
 } from "@mui/material";
@@ -18,6 +20,8 @@ import {
 import { Draggable } from "~/components/Draggable";
 import { Droppable } from "~/components/Droppable";
 import { isEmpty, map } from "lodash";
+import React from "react";
+import { ViewColumn, ViewWeek } from "@mui/icons-material";
 
 export const Route = createFileRoute("/layout_creator")({
   validateSearch: z.object({
@@ -27,6 +31,18 @@ export const Route = createFileRoute("/layout_creator")({
 });
 
 function RouteComponent() {
+  const [columnMenuAnchorEl, setColumnMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const columnMenuOpen = Boolean(columnMenuAnchorEl);
+
+  const handleColumnMenuButtonClick = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    setColumnMenuAnchorEl(event.currentTarget);
+  };
+  const handleColumnMenuButtonClose = () => {
+    setColumnMenuAnchorEl(null);
+  };
   const { currentView } = useLayoutStore();
 
   const [positions, setPositions] = useState<Record<string, string | null>>({
@@ -50,94 +66,105 @@ function RouteComponent() {
     lg: 8,
   };
 
+  const columnsOptionsMap = [1, 2, 3, 4];
+
   function getFlexValue(width) {
     return flexMap[width] || 1;
   }
 
   return (
-    <>
-      <FormControl size="small" sx={{ mb: 2, width: 150 }}>
-        <InputLabel>Lignes</InputLabel>
-        <Select
-          label="Colonnes"
-          value={rows ? rows.length : 0}
-          onChange={(e) => updateLayoutRows(Number(e.target.value))}
-        >
-          <MenuItem value={1}>1 ligne</MenuItem>
-          <MenuItem value={2}>2 lignes</MenuItem>
-          <MenuItem value={3}>3 lignes</MenuItem>
-          <MenuItem value={4}>4 lignes</MenuItem>
-          <MenuItem value={5}>5 lignes</MenuItem>
-          <MenuItem value={6}>6 lignes</MenuItem>
-        </Select>
-      </FormControl>
-
-      <DndContext onDragEnd={handleDragEnd}>
-        <Grid container spacing={2}>
-          {rows && !isEmpty(rows)
-            ? rows.map((row, rowIndex) => {
-                return (
-                  <Grid container size={12} key={rowIndex}>
-                    <Grid size={12}>
-                      <FormControl size="small" sx={{ mb: 2, width: 150 }}>
-                        <InputLabel>Colonnes</InputLabel>
-                        <Select
-                          label="Colonnes"
-                          value={row.columns ? row.columns.length : 0}
-                          onChange={(e) =>
-                            updateLayoutColumns(
-                              rowIndex,
-                              Number(e.target.value)
-                            )
-                          }
-                        >
-                          <MenuItem value={1}>1 colonne</MenuItem>
-                          <MenuItem value={2}>2 colonnes</MenuItem>
-                          <MenuItem value={3}>3 colonnes</MenuItem>
-                          <MenuItem value={4}>4 colonnes</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid container size={12} flexWrap="nowrap">
-                      {row.columns.map((column, columnIndex) => (
-                        <Grid
-                          key={column.id}
-                          style={{
-                            flex: getFlexValue(column.width),
-                            minWidth: 0,
-                          }}
-                        >
-                          <Droppable
-                            column={column}
-                            columnIndex={columnIndex}
-                            rowIndex={rowIndex}
+    // <DndContext onDragEnd={handleDragEnd}>
+    <Grid container spacing={2}>
+      {rows && !isEmpty(rows)
+        ? rows.map((row, rowIndex) => {
+            const columnsCount = row.columns.length;
+            return (
+              <Grid container spacing={1} size={12} key={rowIndex}>
+                <Grid size={12}>
+                  <Box textAlign="center">
+                    <Chip
+                      id="row-selector-button"
+                      clickable
+                      label={
+                        row.columns.length
+                          ? `${row.columns.length} Colonnes`
+                          : "Colonnes"
+                      }
+                      size="small"
+                      aria-controls={columnMenuOpen ? "basic-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={columnMenuOpen ? "true" : undefined}
+                      onClick={handleColumnMenuButtonClick}
+                      icon={<ViewWeek />}
+                      sx={{
+                        bgcolor: "transparent",
+                        "&:hover": {
+                          bgcolor: "secondary",
+                        },
+                      }}
+                    />
+                    <Menu
+                      id="row-select-menu"
+                      anchorEl={columnMenuAnchorEl}
+                      open={columnMenuOpen}
+                      onClose={handleColumnMenuButtonClose}
+                      slotProps={{
+                        list: {
+                          "aria-labelledby": "basic-button",
+                        },
+                      }}
+                    >
+                      {columnsOptionsMap &&
+                        columnsOptionsMap.map((option, index) => (
+                          <MenuItem
+                            key={index}
+                            data-value={option}
+                            onClick={(e) => {
+                              const value = e.currentTarget.dataset.value;
+                              updateLayoutColumns(
+                                rowIndex,
+                                Number(e.currentTarget.dataset.value)
+                              );
+                              handleColumnMenuButtonClose();
+                            }}
                           >
-                            {column.widgets.map((widget) => (
-                              <Draggable key={widget} id={widget}>
-                                {widget}
-                              </Draggable>
-                            ))}
-                          </Droppable>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Grid>
-                );
-              })
-            : null}
-        </Grid>
-      </DndContext>
-    </>
+                            {option} Colonnes
+                          </MenuItem>
+                        ))}
+                    </Menu>
+                  </Box>
+                </Grid>
+                <Grid container size={12} flexWrap="nowrap">
+                  {row.columns.map((column, columnIndex) => {
+                    return (
+                      <Grid
+                        key={column.id}
+                        style={{
+                          flex: getFlexValue(column.width),
+                          minWidth: 0,
+                        }}
+                      >
+                        <Droppable
+                          column={column}
+                          columnIndex={columnIndex}
+                          rowIndex={rowIndex}
+                          widthConfigButton={columnsCount > 1}
+                        >
+                          {column.widgets.map((widget) => (
+                            <Draggable key={widget} id={widget}>
+                              {widget}
+                            </Draggable>
+                          ))}
+                        </Droppable>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Grid>
+            );
+          })
+        : null}
+    </Grid>
+    // </DndContext>
   );
-
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    setPositions((prev) => ({
-      ...prev,
-      [active.id]: over.id,
-    }));
-  }
 }

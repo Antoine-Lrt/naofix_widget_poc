@@ -4,14 +4,44 @@ import {
   Box,
   Button,
   Chip,
+  IconButton,
+  lighten,
   Menu,
   MenuItem,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
 
 import { Add, Expand, Height } from "@mui/icons-material";
 import { updateColumnWidth } from "~/store/layoutStore";
+
+const AddWidgetInfo = () => {
+  const theme = useTheme();
+  return (
+    <Stack direction="column" spacing={1} alignItems="center">
+      <Box
+        sx={{
+          bgcolor: lighten(theme.palette.secondary.main, 0.9),
+          color: theme.palette.secondary.main,
+          width: 58,
+          height: 58,
+          borderRadius: "40%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <IconButton>
+          <Add />
+        </IconButton>
+      </Box>
+      <Typography variant="body2" color="secondary" textAlign="center">
+        Glissez un nouveau widget ici
+      </Typography>
+    </Stack>
+  );
+};
 
 export function Droppable(props) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,7 +53,7 @@ export function Droppable(props) {
     setAnchorEl(null);
   };
 
-  const { column, columnIndex, rowIndex, children } = props;
+  const { column, columnIndex, rowIndex, children, widthConfigButton } = props;
 
   const widthOptionsMap = {
     xs: { label: "Étroite", value: "xs" },
@@ -39,9 +69,6 @@ export function Droppable(props) {
   return (
     <Stack spacing={1}>
       <Box>
-        <Typography variant="body1" margin={0} lineHeight={0.5}>
-          {columnIndex + 1} colonnes
-        </Typography>
         <Typography
           variant="caption"
           margin={0}
@@ -64,53 +91,53 @@ export function Droppable(props) {
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        {React.Children.count(children) === 0 ? (
-          <Typography variant="h6">Drop here</Typography>
-        ) : (
-          children
-        )}
+        {React.Children.count(children) === 0 ? <AddWidgetInfo /> : children}
       </Box>
-      <Box display="flex" justifyContent="center">
-        <Chip
-          id="width-button"
-          clickable
-          label={
-            column.width && widthOptionsMap[column.width]
-              ? widthOptionsMap[column.width].label
-              : "Width"
-          }
-          size="small"
-          aria-controls={open ? "basic-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? "true" : undefined}
-          onClick={handleClick}
-          icon={<Height sx={{ rotate: "90deg" }} />}
-        />
-      </Box>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        slotProps={{
-          list: {
-            "aria-labelledby": "basic-button",
-          },
-        }}
-      >
-        {Object.values(widthOptionsMap).map((option) => (
-          <MenuItem
-            key={option?.value}
-            onClick={() => {
-              updateColumnWidth(rowIndex, columnIndex, option.value);
-
-              handleClose();
+      {widthConfigButton && (
+        <>
+          <Box display="flex" justifyContent="center">
+            <Chip
+              id="width-button"
+              clickable
+              label={
+                column.width && widthOptionsMap[column.width]
+                  ? widthOptionsMap[column.width].label
+                  : "Width"
+              }
+              size="small"
+              aria-controls={open ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              onClick={handleClick}
+              icon={<Height sx={{ rotate: "90deg" }} />}
+            />
+          </Box>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            slotProps={{
+              list: {
+                "aria-labelledby": "basic-button",
+              },
             }}
           >
-            {option?.label}
-          </MenuItem>
-        ))}
-      </Menu>
+            {Object.values(widthOptionsMap).map((option) => (
+              <MenuItem
+                key={option?.value}
+                onClick={() => {
+                  updateColumnWidth(rowIndex, columnIndex, option.value);
+
+                  handleClose();
+                }}
+              >
+                {option?.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </>
+      )}
     </Stack>
   );
 }
