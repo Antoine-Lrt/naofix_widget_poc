@@ -11,6 +11,7 @@ import {
   Menu,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
 import {
   updateLayoutColumns,
@@ -80,6 +81,18 @@ function RouteComponent() {
             const columnsCount = row.columns.length;
             return (
               <Grid container spacing={1} size={12} key={rowIndex}>
+                <Grid>
+                  <Typography
+                    variant="body2"
+                    lineHeight={0.5}
+                    color="text.secondary"
+                  >
+                    NOUVELLE VUE DE (DETAIL OU LISTE)
+                  </Typography>
+                  <Typography variant="h3" fontWeight="bolder">
+                    INTERVENTION
+                  </Typography>
+                </Grid>
                 <Grid size={12}>
                   <Box textAlign="center">
                     <Chip
