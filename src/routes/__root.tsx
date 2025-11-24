@@ -35,6 +35,7 @@ import { Draggable } from "~/components/Draggable";
 import { DndContext } from "@dnd-kit/core";
 import { over } from "lodash";
 import { Droppable } from "~/components/Droppable";
+import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -65,7 +66,6 @@ function Providers({ children }: { children: React.ReactNode }) {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const drawerWidth = 300;
   const isOpen = useDrawer();
   const draggableMarkup = (
     <>
@@ -96,15 +96,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <DndContext onDragEnd={handleDragEnd}>
             <Header drawerIsOpen={isOpen} />
             <Divider />
-            <Container component="main" sx={{ paddingBlock: 4 }}>
+            <Container
+              component="main"
+              sx={{
+                paddingBlock: 4,
+                mr: isOpen ? `${DRAWER_WIDTH}` : "auto",
+              }}
+            >
               {children}
             </Container>
             <Drawer
               sx={{
-                width: drawerWidth,
+                width: DRAWER_WIDTH,
                 flexShrink: 0,
                 "& .MuiDrawer-paper": {
-                  width: drawerWidth,
+                  width: DRAWER_WIDTH,
                 },
               }}
               variant="persistent"
@@ -127,7 +133,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                   Widgets
                 </Typography>
               </Box>
-              <Divider sx={{ marginBottom: 2, marginTop: 1 }} />
             </Drawer>
           </DndContext>
         </Providers>

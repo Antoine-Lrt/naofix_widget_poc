@@ -1,29 +1,16 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
-import {
-  Box,
-  Button,
-  Chip,
-  IconButton,
-  lighten,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Chip, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
-import { Add, Expand, Height } from "@mui/icons-material";
+import { Height, Widgets } from "@mui/icons-material";
 import { updateColumnWidth } from "~/store/layoutStore";
 
 const AddWidgetInfo = () => {
-  const theme = useTheme();
   return (
     <Stack direction="column" spacing={1} alignItems="center">
       <Box
         sx={{
-          bgcolor: lighten(theme.palette.secondary.main, 0.9),
-          color: theme.palette.secondary.main,
+          bgcolor: "background.paper",
           width: 58,
           height: 58,
           borderRadius: "40%",
@@ -32,9 +19,7 @@ const AddWidgetInfo = () => {
           justifyContent: "center",
         }}
       >
-        <IconButton>
-          <Add />
-        </IconButton>
+        <Widgets />
       </Box>
       <Typography variant="body2" color="secondary" textAlign="center">
         Glissez un nouveau widget ici

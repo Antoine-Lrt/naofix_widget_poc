@@ -33,6 +33,7 @@ import {
 } from "~/store/layoutStore";
 import { useMatchRoute } from "@tanstack/react-router";
 import { modules } from "~/mock";
+import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme, disabled }) => css`
@@ -260,7 +261,7 @@ export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
       <Toolbar
         sx={{
           gap: 2,
-          marginRight: drawerIsOpen ? 30 : 0,
+          marginRight: drawerIsOpen ? DRAWER_WIDTH : 0,
           transition: "margin-right 0.3s",
         }}
       >
