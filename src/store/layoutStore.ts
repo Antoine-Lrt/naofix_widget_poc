@@ -35,8 +35,8 @@ const initialLayoutState: LayoutStoreState = {
   currentView: {
     id: "layout-1",
     name: "Default Layout",
-    module: "module-1",
-    model_name: "model-1",
+    module: "",
+    model_name: "",
     view_type: "list",
     row_count: 1,
     device: "desktop",
@@ -150,6 +150,24 @@ export const updateColumnWidth = (
 
   layoutStore.setState({
     currentView: { ...layout, rows: newRows },
+  });
+};
+
+export const updateLayoutModule = (module: string) => {
+  const layout = getcurrentView();
+  if (!layout) return;
+
+  layoutStore.setState({
+    currentView: { ...layout, module },
+  });
+};
+
+export const updateLayoutViewType = (view_type: string) => {
+  const layout = getcurrentView();
+  if (!layout) return;
+
+  layoutStore.setState({
+    currentView: { ...layout, view_type },
   });
 };
 

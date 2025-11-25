@@ -22,7 +22,8 @@ const AddWidgetInfo = () => {
         <Widgets />
       </Box>
       <Typography variant="body2" color="secondary" textAlign="center">
-        Glissez un nouveau widget ici
+        Cliquez sur le bouton <strong>Widget</strong> et faites-le glisser votre
+        widget ici.
       </Typography>
     </Stack>
   );

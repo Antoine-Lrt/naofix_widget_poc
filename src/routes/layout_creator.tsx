@@ -1,28 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import z from "zod";
 import { useState } from "react";
-import { DndContext } from "@dnd-kit/core";
-import {
-  Box,
-  Chip,
-  FormControl,
-  Grid,
-  InputLabel,
-  Menu,
-  MenuItem,
-  Select,
-  Typography,
-} from "@mui/material";
-import {
-  updateLayoutColumns,
-  updateLayoutRows,
-  useLayoutStore,
-} from "~/store/layoutStore";
+import { Box, Chip, Grid, Menu, MenuItem, Typography } from "@mui/material";
+import { updateLayoutColumns, useLayoutStore } from "~/store/layoutStore";
 import { Draggable } from "~/components/Draggable";
 import { Droppable } from "~/components/Droppable";
-import { isEmpty, map } from "lodash";
+import { isEmpty } from "lodash";
 import React from "react";
-import { ViewColumn, ViewWeek } from "@mui/icons-material";
+import { ViewWeek } from "@mui/icons-material";
+import { modules, viewTypes } from "~/mock";
 
 export const Route = createFileRoute("/layout_creator")({
   validateSearch: z.object({
@@ -46,19 +32,20 @@ function RouteComponent() {
   };
   const { currentView } = useLayoutStore();
 
-  const [positions, setPositions] = useState<Record<string, string | null>>({
-    "widget-1": null,
-    "widget-2": null,
-    "widget-3": null,
-  });
+  // const [positions, setPositions] = useState<Record<string, string | null>>({
+  //   "widget-1": null,
+  //   "widget-2": null,
+  //   "widget-3": null,
+  // });
+
+  // const widgets = ["widget-1", "widget-2", "widget-3"];
+
+  // const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
 
   if (!currentView) return <div>Chargement du layout…</div>;
 
-  const { rows } = currentView;
-
-  const widgets = ["widget-1", "widget-2", "widget-3"];
-
-  const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
+  const { rows, module, view_type } = currentView;
+  console.log("🚀 ~ layout_creator.tsx:60 ~ RouteComponent ~ module:", module);
 
   const flexMap = {
     xs: 4,
@@ -68,13 +55,14 @@ function RouteComponent() {
   };
 
   const columnsOptionsMap = [1, 2, 3, 4];
+  const currentModule = modules.find((m) => m.name === module);
+  const currentType = viewTypes.find((t) => t.id === view_type);
 
   function getFlexValue(width) {
     return flexMap[width] || 1;
   }
 
   return (
-    // <DndContext onDragEnd={handleDragEnd}>
     <Grid container spacing={2}>
       {rows && !isEmpty(rows)
         ? rows.map((row, rowIndex) => {
@@ -82,16 +70,21 @@ function RouteComponent() {
             return (
               <Grid container spacing={1} size={12} key={rowIndex}>
                 <Grid>
-                  <Typography
-                    variant="body2"
-                    lineHeight={0.5}
-                    color="text.secondary"
-                  >
-                    NOUVELLE VUE DE (DETAIL OU LISTE)
-                  </Typography>
                   <Typography variant="h3" fontWeight="bolder">
-                    INTERVENTION
+                    {currentModule
+                      ? currentModule.label.toLocaleUpperCase()
+                      : "Module"}
                   </Typography>
+                  {currentType && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      textTransform="uppercase"
+                      lineHeight={0.5}
+                    >
+                      NOUVELLE VUE DE {currentType?.label}
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid size={12}>
                   <Box textAlign="center">
@@ -178,6 +171,5 @@ function RouteComponent() {
           })
         : null}
     </Grid>
-    // </DndContext>
   );
 }

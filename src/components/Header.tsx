@@ -1,12 +1,9 @@
 import {
   AppBar,
   Box,
-  Breadcrumbs,
   Button,
   Chip,
   IconButton,
-  Link,
-  List,
   Menu,
   MenuItem,
   Stack,
@@ -17,22 +14,23 @@ import {
 } from "@mui/material";
 import { CustomLink } from "./CustomLink";
 import {
-  Article,
   Brightness4,
   Brightness7,
   ViewStream,
   ViewModule,
 } from "@mui/icons-material";
+
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
 import React from "react";
 import {
   openDrawer,
-  updateColumnWidth,
+  updateLayoutModule,
   updateLayoutRows,
+  updateLayoutViewType,
   useLayoutStore,
 } from "~/store/layoutStore";
 import { useMatchRoute } from "@tanstack/react-router";
-import { modules } from "~/mock";
+import { modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 
 const StyledCustomLink = styled(CustomLink)(
@@ -51,28 +49,10 @@ const StyledCustomLink = styled(CustomLink)(
   `
 );
 
-const breadcrumbs = [
-  <StyledCustomLink underline="hover" key="1" color="" href="/">
-    MUI
-  </StyledCustomLink>,
-  <StyledCustomLink
-    underline="hover"
-    key="2"
-    color="text.primary"
-    href="/material-ui/getting-started/installation/"
-    // onClick={handleClick}
-  >
-    Core
-  </StyledCustomLink>,
-  <Typography key="3" sx={{ color: "white" }}>
-    Breadcrumb
-  </Typography>,
-];
+//
 
 const CreatorPageToolComponent = () => {
-  const [currentViewType, setCurrentViewType] = React.useState<string>("list");
-
-  const [currentModule, setCurrentModule] = React.useState<string>("");
+  // MODULE
   const [currentModuleMenuAnchorEl, setCurrentModuleMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const currentModuleMenuOpen = Boolean(currentModuleMenuAnchorEl);
@@ -84,37 +64,40 @@ const CreatorPageToolComponent = () => {
   const handleModuleMenuButtonClose = () => {
     setCurrentModuleMenuAnchorEl(null);
   };
-  const [columnMenuAnchorEl, setColumnMenuAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const columnMenuOpen = Boolean(columnMenuAnchorEl);
-  const handleViewTypeButtonClick = (event: React.MouseEvent<HTMLElement>) => {
-    setColumnMenuAnchorEl(event.currentTarget);
-  };
-  const handleViewTypeButtonClose = () => {
-    setColumnMenuAnchorEl(null);
-  };
-
+  // ROWS
   const [rowMenuAnchorEl, setRowMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const rowMenuOpen = Boolean(rowMenuAnchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleRowsMenuButtonClick = (event: React.MouseEvent<HTMLElement>) => {
     setRowMenuAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleRowsMenuButtonClose = () => {
     setRowMenuAnchorEl(null);
+  };
+
+  // VIEW TYPE
+
+  const [viewTypeMenuAnchorEl, setViewTypeMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const viewTypeMenuOpen = Boolean(viewTypeMenuAnchorEl);
+
+  const handleViewTypeMenuButtonClick = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    setViewTypeMenuAnchorEl(event.currentTarget);
+  };
+  const handleViewTypeMenuButtonClose = () => {
+    setViewTypeMenuAnchorEl(null);
   };
 
   const { currentView } = useLayoutStore();
 
-  const { row_count } = currentView;
+  const { row_count, module, view_type } = currentView;
 
   const rowsOptionsMap = [1, 2, 3, 4];
-  const modulesOptionsMap = modules.map((module) => module.name);
-
-  const viewTypeIconMap = {
-    list: <List />,
-    detail: <Article />,
-  };
+  const currentModule = modules.find((m) => m.name === module);
+  const currentType = viewTypes.find((t) => t.id === view_type);
+  const Icon = currentType?.icon;
 
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
@@ -133,7 +116,7 @@ const CreatorPageToolComponent = () => {
         <Chip
           id="module-selector-button"
           clickable
-          label={currentModule ? currentModule : "Modules"}
+          label={currentModule ? currentModule.label : "Modules"}
           size="small"
           aria-controls={currentModuleMenuOpen ? "basic-menu" : undefined}
           aria-haspopup="true"
@@ -158,18 +141,57 @@ const CreatorPageToolComponent = () => {
             },
           }}
         >
-          {modulesOptionsMap &&
-            modulesOptionsMap.map((module, index) => (
+          {modules &&
+            modules.map((module, index) => (
               <MenuItem
                 key={index}
-                data-value={module}
+                data-value={module.name}
                 onClick={(e) => {
                   const value = e.currentTarget.dataset.value;
-                  setCurrentModule(value || "");
+                  updateLayoutModule(value);
                   handleModuleMenuButtonClose();
                 }}
               >
-                {module}
+                {module.label}
+              </MenuItem>
+            ))}
+        </Menu>
+      </Box>
+      <Box>
+        <Chip
+          icon={Icon ? <Icon /> : null}
+          label={currentType?.label || "Type de vue"}
+          clickable
+          size="small"
+          onClick={handleViewTypeMenuButtonClick}
+          sx={{
+            bgcolor: "transparent",
+            "&:hover": { bgcolor: "secondary" },
+          }}
+        />
+        <Menu
+          id="view-type-select-menu"
+          anchorEl={viewTypeMenuAnchorEl}
+          open={viewTypeMenuOpen}
+          onClose={handleViewTypeMenuButtonClose}
+          slotProps={{
+            list: {
+              "aria-labelledby": "basic-button",
+            },
+          }}
+        >
+          {viewTypes &&
+            viewTypes.map((viewType, index) => (
+              <MenuItem
+                key={index}
+                data-value={viewType.id}
+                onClick={(e) => {
+                  const value = e.currentTarget.dataset.value;
+                  updateLayoutViewType(value);
+                  handleViewTypeMenuButtonClose();
+                }}
+              >
+                {viewType.label}
               </MenuItem>
             ))}
         </Menu>
@@ -183,7 +205,7 @@ const CreatorPageToolComponent = () => {
           aria-controls={rowMenuOpen ? "basic-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={rowMenuOpen ? "true" : undefined}
-          onClick={handleClick}
+          onClick={handleRowsMenuButtonClick}
           icon={<ViewStream />}
           sx={{
             bgcolor: "transparent",
@@ -196,7 +218,7 @@ const CreatorPageToolComponent = () => {
           id="row-select-menu"
           anchorEl={rowMenuAnchorEl}
           open={rowMenuOpen}
-          onClose={handleClose}
+          onClose={handleRowsMenuButtonClose}
           slotProps={{
             list: {
               "aria-labelledby": "basic-button",
@@ -211,39 +233,12 @@ const CreatorPageToolComponent = () => {
                 onClick={(e) => {
                   const value = e.currentTarget.dataset.value;
                   updateLayoutRows(Number(value));
-                  handleClose();
+                  handleRowsMenuButtonClose();
                 }}
               >
                 {option} Lignes
               </MenuItem>
             ))}
-        </Menu>
-      </Box>
-      <Box>
-        <Chip
-          id="viewType-selector-button"
-          clickable
-          label={currentViewType === "list" ? "Liste" : "Détails"}
-          size="small"
-          aria-controls={columnMenuOpen ? "basic-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={columnMenuOpen ? "true" : undefined}
-          onClick={handleViewTypeButtonClick}
-          icon={viewTypeIconMap[currentViewType.toLocaleLowerCase()]}
-        />
-        <Menu
-          id="row-select-menu"
-          anchorEl={columnMenuAnchorEl}
-          open={columnMenuOpen}
-          onClose={handleViewTypeButtonClose}
-          slotProps={{
-            list: {
-              "aria-labelledby": "basic-button",
-            },
-          }}
-        >
-          <MenuItem>Liste</MenuItem>
-          <MenuItem>Détails</MenuItem>
         </Menu>
       </Box>
     </Stack>

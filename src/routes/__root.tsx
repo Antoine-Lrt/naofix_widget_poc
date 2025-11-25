@@ -9,7 +9,6 @@ import {
 import { CacheProvider } from "@emotion/react";
 import {
   Box,
-  Button,
   Container,
   CssBaseline,
   Divider,
@@ -25,16 +24,9 @@ import { getTheme } from "~/setup/theme";
 import { Header } from "~/components/Header";
 import { useThemeMode } from "~/store/themeStore";
 import { closeDrawer, useDrawer } from "~/store/layoutStore";
-import {
-  ArrowForward,
-  ArrowForwardIos,
-  ArrowRight,
-  KeyboardArrowRight,
-} from "@mui/icons-material";
+import { KeyboardArrowRight } from "@mui/icons-material";
 import { Draggable } from "~/components/Draggable";
 import { DndContext } from "@dnd-kit/core";
-import { over } from "lodash";
-import { Droppable } from "~/components/Droppable";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 
 export const Route = createRootRoute({
@@ -80,10 +72,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
     if (!over) return;
 
-    setPositions((prev) => ({
-      ...prev,
-      [active.id]: over.id,
-    }));
+    // setPositions((prev) => ({
+    //   ...prev,
+    //   [active.id]: over.id,
+    // }));
   }
 
   return (
@@ -91,29 +83,49 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body style={{ margin: 0 }}>
         <Providers>
           <DndContext onDragEnd={handleDragEnd}>
-            <Header drawerIsOpen={isOpen} />
-            <Divider />
-            <Container
-              component="main"
+            <Box
               sx={{
-                paddingBlock: 4,
-                mr: isOpen ? `${DRAWER_WIDTH}` : "auto",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
               }}
             >
-              {children}
-            </Container>
+              <Header drawerIsOpen={isOpen} />
+              <Divider />
+
+              <Container
+                component="main"
+                sx={{
+                  flexGrow: 1,
+                  paddingBlock: 4,
+                  mr: isOpen ? `${DRAWER_WIDTH}` : "auto",
+                }}
+              >
+                {children}
+              </Container>
+
+              <Box component="footer" sx={{ mt: "auto", py: 2 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  ©2025 NaoFix
+                </Typography>
+              </Box>
+            </Box>
+
             <Drawer
               sx={{
                 width: DRAWER_WIDTH,
                 flexShrink: 0,
-                "& .MuiDrawer-paper": {
-                  width: DRAWER_WIDTH,
-                },
+                "& .MuiDrawer-paper": { width: DRAWER_WIDTH },
               }}
               variant="persistent"
+              slotProps={{ paper: { sx: { bgcolor: "background.default" } } }}
               anchor="right"
               open={isOpen}
             >
@@ -129,9 +141,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 >
                   <KeyboardArrowRight />
                 </IconButton>
-                <Typography variant="h6" sx={{ color: "white" }}>
-                  Widgets
-                </Typography>
+                <Typography variant="h6">Widgets</Typography>
               </Box>
             </Drawer>
           </DndContext>
