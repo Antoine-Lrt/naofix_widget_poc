@@ -32,6 +32,7 @@ import {
 import { useMatchRoute } from "@tanstack/react-router";
 import { modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
+import { useModal } from "~/store/modalStore";
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme, disabled }) => css`
@@ -76,7 +77,6 @@ const CreatorPageToolComponent = () => {
   };
 
   // VIEW TYPE
-
   const [viewTypeMenuAnchorEl, setViewTypeMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const viewTypeMenuOpen = Boolean(viewTypeMenuAnchorEl);
@@ -91,6 +91,7 @@ const CreatorPageToolComponent = () => {
   };
 
   const { currentView } = useLayoutStore();
+  const { open } = useModal("templateModal");
 
   const { row_count, module, view_type } = currentView;
 
@@ -107,11 +108,23 @@ const CreatorPageToolComponent = () => {
           color="primary"
           size="small"
           disableElevation
+          onClick={open}
+        >
+          Modèles de page
+        </Button>
+      </Box>
+      <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          disableElevation
           onClick={openDrawer}
         >
           Widgets
         </Button>
       </Box>
+
       <Box>
         <Chip
           id="module-selector-button"

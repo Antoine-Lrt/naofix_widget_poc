@@ -28,6 +28,8 @@ import { KeyboardArrowRight } from "@mui/icons-material";
 import { Draggable } from "~/components/Draggable";
 import { DndContext } from "@dnd-kit/core";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
+import DefaultModal from "~/components/Modals/DefaultModal";
+import { useModal } from "~/store/modalStore";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -59,6 +61,7 @@ function Providers({ children }: { children: React.ReactNode }) {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const isOpen = useDrawer();
+  const { close } = useModal("templateModal");
   const draggableMarkup = (
     <>
       <Draggable id="widget-1">Widget 1</Draggable>
@@ -145,6 +148,25 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               </Box>
             </Drawer>
           </DndContext>
+          <DefaultModal
+            id="templateModal"
+            modalDetail={{
+              title: "Modèles de page",
+              content: "",
+              actions: [
+                {
+                  label: "Fermer",
+                  onClick: close,
+                },
+                {
+                  label: "Utiliser ce modèle",
+                  onClick: () => {
+                    console.log("Utiliser ce modèle");
+                  },
+                },
+              ],
+            }}
+          />
         </Providers>
 
         <TanStackRouterDevtools position="bottom-right" />
