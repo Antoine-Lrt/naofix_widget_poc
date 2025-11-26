@@ -103,7 +103,11 @@ const CreatorPageToolComponent = () => {
 
   const previewMode = usePreviewMode();
 
-  const { row_count, module, view_type } = currentView;
+  const { row_count, module, view_type } = currentView || {
+    row_count: 1,
+    module: "",
+    view_type: "",
+  };
 
   const rowsOptionsMap = [1, 2, 3, 4];
   const currentModule = modules.find((m) => m.name === module);
@@ -171,7 +175,9 @@ const CreatorPageToolComponent = () => {
                 data-value={module.name}
                 onClick={(e) => {
                   const value = e.currentTarget.dataset.value;
-                  updateLayoutModule(value);
+                  if (value) {
+                    updateLayoutModule(value);
+                  }
                   handleModuleMenuButtonClose();
                 }}
               >
@@ -182,7 +188,7 @@ const CreatorPageToolComponent = () => {
       </Box>
       <Box>
         <Chip
-          icon={Icon ? <Icon /> : null}
+          icon={Icon ? <Icon /> : undefined}
           label={currentType?.label || "Type de vue"}
           clickable
           size="small"
@@ -210,7 +216,9 @@ const CreatorPageToolComponent = () => {
                 data-value={viewType.id}
                 onClick={(e) => {
                   const value = e.currentTarget.dataset.value;
-                  updateLayoutViewType(value);
+                  if (value) {
+                    updateLayoutViewType(value);
+                  }
                   handleViewTypeMenuButtonClose();
                 }}
               >

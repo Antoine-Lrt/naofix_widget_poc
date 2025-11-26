@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { Box, Chip, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
@@ -32,9 +32,29 @@ const AddWidgetInfo = () => {
   );
 };
 
-export function Droppable(props) {
+// Typage des props
+interface DroppableProps {
+  column: {
+    id: string;
+    widgets: string[];
+    width?: "xs" | "sm" | "md" | "lg";
+  };
+  columnIndex: number;
+  rowIndex: number;
+  children?: ReactNode;
+  widthConfigButton?: boolean;
+}
+
+export function Droppable({
+  column,
+  columnIndex,
+  rowIndex,
+  children,
+  widthConfigButton,
+}: DroppableProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,7 +62,6 @@ export function Droppable(props) {
     setAnchorEl(null);
   };
 
-  const { column, columnIndex, rowIndex, children, widthConfigButton } = props;
   const { borderRadius } = useThemeMode();
 
   const widthOptionsMap = {
@@ -83,6 +102,7 @@ export function Droppable(props) {
       >
         {React.Children.count(children) === 0 ? <AddWidgetInfo /> : children}
       </Box>
+
       {widthConfigButton && (
         <>
           <Box display="flex" justifyContent="center">
@@ -115,14 +135,17 @@ export function Droppable(props) {
           >
             {Object.values(widthOptionsMap).map((option) => (
               <MenuItem
-                key={option?.value}
+                key={option.value}
                 onClick={() => {
-                  updateColumnWidth(rowIndex, columnIndex, option.value);
-
+                  updateColumnWidth(
+                    rowIndex,
+                    columnIndex,
+                    option.value as "xs" | "sm" | "md" | "lg"
+                  );
                   handleClose();
                 }}
               >
-                {option?.label}
+                {option.label}
               </MenuItem>
             ))}
           </Menu>

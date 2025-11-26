@@ -57,7 +57,9 @@ function RouteComponent() {
   const currentModule = modules.find((m) => m.name === module);
   const currentType = viewTypes.find((t) => t.id === view_type);
 
-  function getFlexValue(width) {
+  type FlexWidth = "xs" | "sm" | "md" | "lg";
+
+  function getFlexValue(width: FlexWidth): number {
     return flexMap[width] || 1;
   }
 
@@ -143,7 +145,7 @@ function RouteComponent() {
                       <Grid
                         key={column.id}
                         style={{
-                          flex: getFlexValue(column.width),
+                          flex: getFlexValue(column.width ?? "xs"),
                           minWidth: 0,
                         }}
                       >

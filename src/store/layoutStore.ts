@@ -145,7 +145,7 @@ export const updateLayoutColumns = (rowIndex: number, columns: number) => {
 export const updateColumnWidth = (
   rowIndex: number,
   columnIndex: number,
-  width: string
+  width: "xs" | "sm" | "md" | "lg"
 ) => {
   const layout = getcurrentView();
   if (!layout) return;

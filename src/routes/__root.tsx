@@ -98,7 +98,7 @@ function TemplateLayoutModalContent({
   );
 
   const handleSelectTemplate = (template: (typeof MockedTemplates)[0]) => {
-    applyLayoutTemplate(template);
+    applyLayoutTemplate(template as any);
     close();
   };
 
@@ -181,7 +181,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const drawerIsOpen = useDrawer();
   const { close } = useModal("templateModal");
   const { currentView } = useLayoutStore();
-  const { module, view_type } = currentView;
+  const { module = "", view_type = "" } = currentView || {};
   const draggableMarkup = (
     <>
       <Draggable id="widget-1">Widget 1</Draggable>

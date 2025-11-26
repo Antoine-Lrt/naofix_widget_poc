@@ -12,13 +12,20 @@ const themeStore = new Store<ThemeStoreState>({
 
 export const toggleThemeMode = () => {
   const current = themeStore.state.mode;
-  themeStore.setState({ mode: current === "light" ? "dark" : "light" });
+  themeStore.setState((prev) => ({
+    ...prev,
+    mode: current === "light" ? "dark" : "light",
+  }));
 };
 
 export const changeThemeBorderRadius = (
   borderRadius: "none" | "small" | "medium" | "large" | "rounded"
 ) => {
-  themeStore.setState({ borderRadius });
+  themeStore.setState((prev) => ({
+    ...prev,
+    borderRadius,
+  }));
 };
 
+// Hook pour utiliser le store
 export const useThemeMode = () => useStore(themeStore);
