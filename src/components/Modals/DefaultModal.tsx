@@ -7,7 +7,9 @@ import {
   Button,
 } from "@mui/material";
 import React from "react";
+import { radiusMap } from "~/helpers/radiusMap";
 import { useModal } from "~/store/modalStore";
+import { useThemeMode } from "~/store/themeStore";
 
 interface ModalActionProps {
   label: string;
@@ -15,7 +17,7 @@ interface ModalActionProps {
 }
 
 interface ModalDetailProps {
-  title: string;
+  title: string | React.ReactNode;
   content: React.ReactNode;
   actions?: ModalActionProps[];
 }
@@ -23,17 +25,35 @@ interface ModalDetailProps {
 interface DefaultModalProps {
   id: string;
   modalDetail: ModalDetailProps;
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
-export default function DefaultModal({ id, modalDetail }: DefaultModalProps) {
-  const { isOpen } = useModal<{ name: string }>(id);
+export default function DefaultModal({
+  id,
+  modalDetail,
+  size,
+}: DefaultModalProps) {
+  const { isOpen, close } = useModal<{ name: string }>(id);
   const { title, content, actions } = modalDetail ?? {};
+  const { borderRadius } = useThemeMode();
+
+  const sizeMap = {
+    xs: "xs" as const,
+    sm: "sm" as const,
+    md: "md" as const,
+    lg: "lg" as const,
+  };
   return (
     <Dialog
       open={isOpen}
       onClose={close}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      fullWidth
+      sx={{
+        borderRadius: radiusMap[borderRadius],
+      }}
+      maxWidth={sizeMap[size ?? "md"]}
     >
       {title && <DialogTitle id="alert-dialog-title">{title}</DialogTitle>}
 

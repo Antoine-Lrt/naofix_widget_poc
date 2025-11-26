@@ -5,7 +5,7 @@ import { Box, Chip, Grid, Menu, MenuItem, Typography } from "@mui/material";
 import { updateLayoutColumns, useLayoutStore } from "~/store/layoutStore";
 import { Draggable } from "~/components/Draggable";
 import { Droppable } from "~/components/Droppable";
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 import React from "react";
 import { ViewWeek } from "@mui/icons-material";
 import { modules, viewTypes } from "~/mock";
@@ -45,7 +45,6 @@ function RouteComponent() {
   if (!currentView) return <div>Chargement du layout…</div>;
 
   const { rows, module, view_type } = currentView;
-  console.log("🚀 ~ layout_creator.tsx:60 ~ RouteComponent ~ module:", module);
 
   const flexMap = {
     xs: 4,
@@ -64,28 +63,26 @@ function RouteComponent() {
 
   return (
     <Grid container spacing={2}>
+      <Grid>
+        <Typography variant="h3" fontWeight="bolder">
+          {currentModule ? currentModule.label.toLocaleUpperCase() : "Module"}
+        </Typography>
+        {currentType && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            textTransform="uppercase"
+            lineHeight={0.5}
+          >
+            NOUVELLE VUE DE {currentType?.label}
+          </Typography>
+        )}
+      </Grid>
       {rows && !isEmpty(rows)
         ? rows.map((row, rowIndex) => {
             const columnsCount = row.columns.length;
             return (
               <Grid container spacing={1} size={12} key={rowIndex}>
-                <Grid>
-                  <Typography variant="h3" fontWeight="bolder">
-                    {currentModule
-                      ? currentModule.label.toLocaleUpperCase()
-                      : "Module"}
-                  </Typography>
-                  {currentType && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      textTransform="uppercase"
-                      lineHeight={0.5}
-                    >
-                      NOUVELLE VUE DE {currentType?.label}
-                    </Typography>
-                  )}
-                </Grid>
                 <Grid size={12}>
                   <Box textAlign="center">
                     <Chip

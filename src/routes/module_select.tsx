@@ -9,8 +9,10 @@ import {
   Typography,
 } from "@mui/material";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { radiusMap } from "~/helpers/radiusMap";
 import { modules } from "~/mock";
 import { updateLayoutModule } from "~/store/layoutStore";
+import { useThemeMode } from "~/store/themeStore";
 
 export const Route = createFileRoute("/module_select")({
   component: RouteComponent,
@@ -23,6 +25,8 @@ function RouteComponent() {
     updateLayoutModule(module);
     navigate({ to: "/layout_creator" });
   };
+
+  const { borderRadius } = useThemeMode();
   return (
     <Box gap={4}>
       <Box textAlign="center" p={4}>
@@ -45,7 +49,7 @@ function RouteComponent() {
                   cursor: "pointer",
                   border: "1px solid",
                   borderColor: "divider",
-                  borderRadius: 4,
+                  borderRadius: radiusMap[borderRadius],
                   "&:hover": {
                     transform: "translateY(-2px)",
                     boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",

@@ -3,12 +3,14 @@ import { Store, useStore } from "@tanstack/react-store";
 export interface LayoutColumn {
   id: string;
   widgets: string[];
-  width?: "xs" | "sm" | "md" | "lg" | undefined;
+  width?: "xs" | "sm" | "md" | "lg";
+  order?: number;
 }
 
 export interface LayoutRow {
   id: string;
   columns: LayoutColumn[];
+  order?: number;
 }
 
 interface DrawerState {
@@ -29,6 +31,7 @@ export interface ViewStateType {
 interface LayoutStoreState {
   currentView: ViewStateType | null;
   drawer: DrawerState;
+  previewMode: boolean;
 }
 
 const initialLayoutState: LayoutStoreState = {
@@ -52,12 +55,11 @@ const initialLayoutState: LayoutStoreState = {
         ],
       },
     ],
-    rowHeights: [30, 30],
   },
-
   drawer: {
     isOpen: false,
   },
+  previewMode: false,
 };
 
 const layoutStore = new Store<LayoutStoreState>(initialLayoutState);
@@ -68,10 +70,18 @@ export const getcurrentView = () => layoutStore.state.currentView;
 
 //
 // ---------- ACTIONS ----------
-//
-
 export const loadLayout = (layout: ViewStateType) => {
-  layoutStore.setState({ currentView: layout });
+  layoutStore.setState({
+    ...layoutStore.state,
+    currentView: layout,
+  });
+};
+
+export const applyLayoutTemplate = (template: ViewStateType) => {
+  layoutStore.setState({
+    ...layoutStore.state,
+    currentView: { ...template, id: template.id },
+  });
 };
 
 export const updateLayoutRows = (rows: number) => {
@@ -79,20 +89,21 @@ export const updateLayoutRows = (rows: number) => {
   if (!layout) return;
 
   const newRowsData: LayoutRow[] = Array.from({ length: rows }, (_, i) => {
-    if (i < (layout.rows?.length ?? 0)) {
-      return layout.rows[i];
-    }
+    if (i < (layout.rows?.length ?? 0)) return layout.rows![i];
+
     return {
       id: `row-${i}`,
+      order: i,
       columns: [
-        { id: `column-${i}-0`, width: "md", widgets: [] },
-        { id: `column-${i}-1`, width: "md", widgets: [] },
-        { id: `column-${i}-2`, width: "md", widgets: [] },
+        { id: `column-${i}-0`, order: 0, width: "md", widgets: [] },
+        { id: `column-${i}-1`, order: 1, width: "md", widgets: [] },
+        { id: `column-${i}-2`, order: 2, width: "md", widgets: [] },
       ],
     };
   });
 
   layoutStore.setState({
+    ...layoutStore.state,
     currentView: {
       ...layout,
       row_count: rows,
@@ -105,28 +116,29 @@ export const updateLayoutColumns = (rowIndex: number, columns: number) => {
   const layout = getcurrentView();
   if (!layout) return;
 
-  const row = layout.rows[rowIndex];
+  const row = layout.rows![rowIndex];
   if (!row) return;
 
   const newColumnData: LayoutColumn[] = Array.from(
     { length: columns },
     (_, i) => {
-      if (i < row.columns.length) {
-        return row.columns[i];
-      }
-      return { id: `column-${i}`, widgets: [] };
+      if (i < row.columns.length) return row.columns[i];
+      return {
+        id: `column-${rowIndex}-${i}`,
+        order: i,
+        width: "md",
+        widgets: [],
+      };
     }
   );
 
-  const newRows = layout.rows.map((r, idx) =>
+  const newRows = layout.rows!.map((r, idx) =>
     idx === rowIndex ? { ...r, columns: newColumnData } : r
   );
 
   layoutStore.setState({
-    currentView: {
-      ...layout,
-      rows: newRows,
-    },
+    ...layoutStore.state,
+    currentView: { ...layout, rows: newRows },
   });
 };
 
@@ -137,18 +149,20 @@ export const updateColumnWidth = (
 ) => {
   const layout = getcurrentView();
   if (!layout) return;
-  const row = layout.rows[rowIndex];
+
+  const row = layout.rows![rowIndex];
   if (!row) return;
 
-  const newColumnData: LayoutColumn[] = row.columns.map((c, idx) =>
+  const newColumnData = row.columns.map((c, idx) =>
     idx === columnIndex ? { ...c, width } : c
   );
 
-  const newRows = layout.rows.map((r, idx) =>
+  const newRows = layout.rows!.map((r, idx) =>
     idx === rowIndex ? { ...r, columns: newColumnData } : r
   );
 
   layoutStore.setState({
+    ...layoutStore.state,
     currentView: { ...layout, rows: newRows },
   });
 };
@@ -158,6 +172,7 @@ export const updateLayoutModule = (module: string) => {
   if (!layout) return;
 
   layoutStore.setState({
+    ...layoutStore.state,
     currentView: { ...layout, module },
   });
 };
@@ -167,38 +182,45 @@ export const updateLayoutViewType = (view_type: string) => {
   if (!layout) return;
 
   layoutStore.setState({
+    ...layoutStore.state,
     currentView: { ...layout, view_type },
   });
 };
 
 //
 // ---------- DRAWER ACTIONS ----------
-//
-
 export const openDrawer = () => {
-  layoutStore.setState((state) => ({
-    ...state,
+  layoutStore.setState({
+    ...layoutStore.state,
     drawer: { isOpen: true },
-  }));
+  });
 };
 
 export const closeDrawer = () => {
-  layoutStore.setState((state) => ({
-    ...state,
+  layoutStore.setState({
+    ...layoutStore.state,
     drawer: { isOpen: false },
-  }));
+  });
+};
+
+//
+// ---------- PREVIEW MODE ----------
+export const togglePreviewMode = () => {
+  layoutStore.setState({
+    ...layoutStore.state,
+    previewMode: !layoutStore.state.previewMode,
+  });
 };
 
 //
 // ---------- HOOKS ----------
-//
-
 export const useLayoutStore = () => useStore(layoutStore);
 
 export const usecurrentView = () =>
   useStore(layoutStore, (state) => state.currentView);
 
-export const useDrawer = () => {
-  const drawer = useStore(layoutStore, (state) => state.drawer);
-  return drawer?.isOpen ?? false;
-};
+export const useDrawer = () =>
+  useStore(layoutStore, (state) => state.drawer.isOpen);
+
+export const usePreviewMode = () =>
+  useStore(layoutStore, (state) => state.previewMode);

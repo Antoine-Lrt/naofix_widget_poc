@@ -4,8 +4,11 @@ import { Box, Chip, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
 import { Height, Widgets } from "@mui/icons-material";
 import { updateColumnWidth } from "~/store/layoutStore";
+import { radiusMap } from "~/helpers/radiusMap";
+import { useThemeMode } from "~/store/themeStore";
 
 const AddWidgetInfo = () => {
+  const { borderRadius } = useThemeMode();
   return (
     <Stack direction="column" spacing={1} alignItems="center">
       <Box
@@ -13,7 +16,7 @@ const AddWidgetInfo = () => {
           bgcolor: "background.paper",
           width: 58,
           height: 58,
-          borderRadius: "40%",
+          borderRadius: radiusMap[borderRadius],
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -40,6 +43,7 @@ export function Droppable(props) {
   };
 
   const { column, columnIndex, rowIndex, children, widthConfigButton } = props;
+  const { borderRadius } = useThemeMode();
 
   const widthOptionsMap = {
     xs: { label: "Étroite", value: "xs" },
@@ -70,7 +74,7 @@ export function Droppable(props) {
         sx={{
           minHeight: 400,
           p: 2.5,
-          borderRadius: 2,
+          borderRadius: radiusMap[borderRadius],
           bgcolor: isOver ? "primary.50" : "transparent",
           border: "2px dashed",
           borderColor: isOver ? "primary.main" : "divider",

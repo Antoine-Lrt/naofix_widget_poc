@@ -3,12 +3,12 @@ import {
   Box,
   Button,
   Chip,
+  Divider,
   IconButton,
   Menu,
   MenuItem,
   Stack,
   Toolbar,
-  Typography,
   css,
   styled,
 } from "@mui/material";
@@ -18,16 +18,22 @@ import {
   Brightness7,
   ViewStream,
   ViewModule,
+  Save,
+  SaveOutlined,
+  Visibility,
 } from "@mui/icons-material";
 
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
 import React from "react";
 import {
   openDrawer,
+  closeDrawer,
   updateLayoutModule,
   updateLayoutRows,
   updateLayoutViewType,
   useLayoutStore,
+  usePreviewMode,
+  useDrawer,
 } from "~/store/layoutStore";
 import { useMatchRoute } from "@tanstack/react-router";
 import { modules, viewTypes } from "~/mock";
@@ -91,7 +97,11 @@ const CreatorPageToolComponent = () => {
   };
 
   const { currentView } = useLayoutStore();
+  const drawerIsOpen = useDrawer();
+
   const { open } = useModal("templateModal");
+
+  const previewMode = usePreviewMode();
 
   const { row_count, module, view_type } = currentView;
 
@@ -119,7 +129,7 @@ const CreatorPageToolComponent = () => {
           color="primary"
           size="small"
           disableElevation
-          onClick={openDrawer}
+          onClick={drawerIsOpen ? closeDrawer : openDrawer}
         >
           Widgets
         </Button>
@@ -253,6 +263,17 @@ const CreatorPageToolComponent = () => {
               </MenuItem>
             ))}
         </Menu>
+      </Box>
+      <Divider orientation="vertical" flexItem />
+      <Box>
+        <IconButton size="small">
+          <Visibility />
+        </IconButton>
+      </Box>
+      <Box>
+        <IconButton size="small">
+          <SaveOutlined />
+        </IconButton>
       </Box>
     </Stack>
   );
