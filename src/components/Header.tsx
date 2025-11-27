@@ -21,9 +21,15 @@ import {
   Save,
   SaveOutlined,
   Visibility,
+  LightMode,
+  DarkMode,
 } from "@mui/icons-material";
 
-import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
+import {
+  toggleThemeMode,
+  toggleThemeMode,
+  useThemeMode,
+} from "~/store/themeStore";
 import React from "react";
 import {
   openDrawer,
@@ -340,7 +346,7 @@ export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
           </StyledCustomLink>
         )}
         <IconButton onClick={toggleThemeMode}>
-          {mode === "light" ? <Brightness4 /> : <Brightness7 />}
+          {mode === "light" ? <LightMode /> : <DarkMode />}
         </IconButton>
       </Toolbar>
     </AppBar>
