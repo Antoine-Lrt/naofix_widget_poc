@@ -352,17 +352,25 @@ const CreatorPageToolComponent = () => {
 };
 
 export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
+  console.log("🚀 ~ Header.tsx:355 ~ Header ~ drawerIsOpen:", drawerIsOpen);
+
   const { mode } = useThemeMode();
   const matchRoute = useMatchRoute();
   const isLayoutCreator = matchRoute({ to: "/layout_creator" });
 
   const logoContainerStyle = 200;
   return (
-    <AppBar position="static" elevation={0} sx={{ bgcolor: "transparent" }}>
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{
+        bgcolor: "transparent",
+      }}
+    >
       <Toolbar
         sx={{
+          mr: drawerIsOpen ? `${DRAWER_WIDTH}` : "0px",
           gap: 2,
-          marginRight: drawerIsOpen ? DRAWER_WIDTH : 0,
           transition: "margin-right 0.3s",
         }}
       >

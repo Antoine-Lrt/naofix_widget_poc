@@ -220,6 +220,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <Divider />
 
               {/* <Container
+              maxWidth="xl"
                 component="main"
                 sx={{
                   flexGrow: 1,
@@ -233,8 +234,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 px={10}
                 component="main"
                 sx={{
+                  flex: 1,
+                  transition: "margin-right 0.3s",
                   paddingBlock: 4,
-                  mr: drawerIsOpen ? `${DRAWER_WIDTH}` : "auto",
+                  mr: drawerIsOpen ? `${DRAWER_WIDTH}` : 0,
                 }}
               >
                 {children}
