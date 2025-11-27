@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = ".output/public"
+  publish = ".vinxi/output/public"
 
 [[redirects]]
   from = "/*"
@@ -8,4 +8,4 @@
   status = 200
 
 [functions]
-  directory = ".output/server"
+  directory = ".vinxi/output/server"
