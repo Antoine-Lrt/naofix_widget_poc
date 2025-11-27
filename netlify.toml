@@ -1,11 +1,3 @@
 [build]
   command = "npm run build"
-  publish = ".vinxi/output/public"
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
-
-[functions]
-  directory = ".vinxi/output/server"
+  publish = ".netlify/dist"
