@@ -187,6 +187,16 @@ export const updateLayoutViewType = (view_type: string) => {
   });
 };
 
+export const updateLayoutModelName = (model_name: string) => {
+  const layout = getcurrentView();
+  if (!layout) return;
+
+  layoutStore.setState({
+    ...layoutStore.state,
+    currentView: { ...layout, model_name },
+  });
+};
+
 //
 // ---------- DRAWER ACTIONS ----------
 export const openDrawer = () => {

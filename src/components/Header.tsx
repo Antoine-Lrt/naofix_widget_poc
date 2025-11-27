@@ -20,6 +20,7 @@ import {
   Visibility,
   DarkMode,
   LightMode,
+  Sell,
 } from "@mui/icons-material";
 
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
@@ -33,9 +34,10 @@ import {
   useLayoutStore,
   usePreviewMode,
   useDrawer,
+  updateLayoutModelName,
 } from "~/store/layoutStore";
 import { useMatchRoute } from "@tanstack/react-router";
-import { modules, viewTypes } from "~/mock";
+import { models, modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 import { useModal } from "~/store/modalStore";
 
@@ -70,6 +72,17 @@ const CreatorPageToolComponent = () => {
   const handleModuleMenuButtonClose = () => {
     setCurrentModuleMenuAnchorEl(null);
   };
+  // MODEL
+  const [currentModelMenuAnchorEl, setCurrentModelMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const currentModelMenuOpen = Boolean(currentModelMenuAnchorEl);
+  const handleModelMenuButtonClick = (event: React.MouseEvent<HTMLElement>) => {
+    setCurrentModelMenuAnchorEl(event.currentTarget);
+  };
+  const handleModelMenuButtonClose = () => {
+    setCurrentModelMenuAnchorEl(null);
+  };
+
   // ROWS
   const [rowMenuAnchorEl, setRowMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -102,16 +115,21 @@ const CreatorPageToolComponent = () => {
 
   const previewMode = usePreviewMode();
 
-  const { row_count, module, view_type } = currentView || {
+  const { row_count, module, view_type, model_name } = currentView || {
     row_count: 1,
     module: "",
     view_type: "",
+    model_name: "",
   };
 
   const rowsOptionsMap = [1, 2, 3, 4];
   const currentModule = modules.find((m) => m.name === module);
   const currentType = viewTypes.find((t) => t.id === view_type);
+  const currentModel = models.find((m) => m.name === model_name);
+
   const Icon = currentType?.icon;
+
+  const filteredModels = models.filter((m) => m.module === currentModule?.name);
 
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
@@ -181,6 +199,53 @@ const CreatorPageToolComponent = () => {
                 }}
               >
                 {module.label}
+              </MenuItem>
+            ))}
+        </Menu>
+      </Box>
+      <Box>
+        <Chip
+          id="model-selector-button"
+          clickable
+          label={currentModel ? currentModel.label : "Modèles"}
+          size="small"
+          aria-controls={currentModelMenuOpen ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={currentModelMenuOpen ? "true" : undefined}
+          onClick={handleModelMenuButtonClick}
+          icon={<Sell />}
+          sx={{
+            bgcolor: "transparent",
+            "&:hover": {
+              bgcolor: "secondary",
+            },
+          }}
+        />
+        <Menu
+          id="model-select-menu"
+          anchorEl={currentModelMenuAnchorEl}
+          open={currentModelMenuOpen}
+          onClose={handleModelMenuButtonClose}
+          slotProps={{
+            list: {
+              "aria-labelledby": "basic-button",
+            },
+          }}
+        >
+          {filteredModels &&
+            filteredModels.map((model, index) => (
+              <MenuItem
+                key={index}
+                data-value={model.name}
+                onClick={(e) => {
+                  const value = e.currentTarget.dataset.value;
+                  if (value) {
+                    updateLayoutModelName(value);
+                  }
+                  handleModelMenuButtonClose();
+                }}
+              >
+                {model.label}
               </MenuItem>
             ))}
         </Menu>

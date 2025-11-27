@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import z from "zod";
-import { useState } from "react";
 import { Box, Chip, Grid, Menu, MenuItem, Typography } from "@mui/material";
 import { updateLayoutColumns, useLayoutStore } from "~/store/layoutStore";
 import { Draggable } from "~/components/Draggable";
@@ -8,7 +7,7 @@ import { Droppable } from "~/components/Droppable";
 import { isEmpty } from "lodash-es";
 import React from "react";
 import { ViewWeek } from "@mui/icons-material";
-import { modules, viewTypes } from "~/mock";
+import { models, modules, viewTypes } from "~/mock";
 
 export const Route = createFileRoute("/layout_creator")({
   validateSearch: z.object({
@@ -48,7 +47,7 @@ function RouteComponent() {
 
   if (!currentView) return <div>Chargement du layout…</div>;
 
-  const { rows, module, view_type } = currentView;
+  const { rows, module, view_type, model_name } = currentView;
 
   const flexMap = {
     xs: 4,
@@ -60,6 +59,7 @@ function RouteComponent() {
   const columnsOptionsMap = [1, 2, 3, 4];
   const currentModule = modules.find((m) => m.name === module);
   const currentType = viewTypes.find((t) => t.id === view_type);
+  const currentModel = models.find((m) => m.name === model_name);
 
   type FlexWidth = "xs" | "sm" | "md" | "lg";
 
@@ -80,17 +80,13 @@ function RouteComponent() {
             textTransform="uppercase"
             lineHeight={0.5}
           >
-            NOUVELLE VUE DE {currentType?.label}
+            NOUVELLE VUE DE {currentType?.label} POUR LE MODÈLE{" "}
+            {currentModel?.label}
           </Typography>
         )}
       </Grid>
       {rows && !isEmpty(rows)
         ? rows.map((row, rowIndex) => {
-            console.log(
-              "🚀 ~ layout_creator.tsx:85 ~ RouteComponent ~ row:",
-              row
-            );
-
             const columnsCount = row.columns.length;
             return (
               <Grid container spacing={1} size={12} key={rowIndex}>

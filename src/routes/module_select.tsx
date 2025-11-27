@@ -37,7 +37,7 @@ function RouteComponent() {
           Choisissez le module pour lequel vous souhaitez créer un nouvelle vue
         </Typography>
       </Box>
-      <Grid container spacing={4}>
+      <Grid alignItems="center" justifyContent="center" container spacing={4}>
         {modules.map((module, index) => {
           return (
             <Grid size={3} key={index}>

@@ -219,7 +219,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <Header drawerIsOpen={drawerIsOpen} />
               <Divider />
 
-              <Container
+              {/* <Container
                 component="main"
                 sx={{
                   flexGrow: 1,
@@ -228,7 +228,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 }}
               >
                 {children}
-              </Container>
+              </Container> */}
+              <Stack
+                px={10}
+                component="main"
+                sx={{
+                  paddingBlock: 4,
+                  mr: drawerIsOpen ? `${DRAWER_WIDTH}` : "auto",
+                }}
+              >
+                {children}
+              </Stack>
 
               <Box component="footer" sx={{ mt: "auto", py: 2 }}>
                 <Typography

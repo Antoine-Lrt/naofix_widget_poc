@@ -35,30 +35,23 @@ export const modules = [
     description: "Suivi du temps de travail",
     color: "#04e2ffff",
   },
+];
 
+export const models = [
+  { id: "thread_model", name: "thread", label: "Message", module: "messaging" },
+  { id: "ticket_model", name: "ticket", label: "Ticket", module: "helpdesk" },
   {
-    id: "reservation_module",
-    name: "reservation",
-    label: "Réservation",
-    icon: CalendarMonthOutlined,
-    description: "Gestion des réservations et calendriers",
-    color: "#ee0008ff",
+    id: "intervention_model",
+    name: "intervention",
+    label: "Intervention",
+    module: "intervention",
   },
+  { id: "task_model", name: "task", label: "Tâche", module: "intervention" },
   {
-    id: "tasks_module",
-    name: "tasks",
-    label: "Tâches",
-    icon: CheckBoxOutlined,
-    description: "Gestions des tâches et projets",
-    color: "#008709ff",
-  },
-  {
-    id: "entry_time_module",
+    id: "entry_time_model",
     name: "entry_time",
     label: "Saisie de temps",
-    icon: AccessTimeOutlined,
-    description: "Suivi du temps de travail",
-    color: "#c600b5ff",
+    module: "intervention",
   },
 ];
 
