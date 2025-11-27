@@ -1,0 +1,7 @@
+<script>
+  // redirige toutes les routes vers index.html
+  const pathname = window.location.pathname;
+  if (pathname !== "/" && !pathname.includes("index.html")) {
+    window.location.replace("/naofix_widget_poc/");
+  }
+</script>
