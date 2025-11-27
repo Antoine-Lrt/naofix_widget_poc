@@ -21,8 +21,8 @@ import {
   Save,
   SaveOutlined,
   Visibility,
-  LightMode,
   DarkMode,
+  LightMode,
 } from "@mui/icons-material";
 
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
@@ -342,7 +342,7 @@ export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
           </StyledCustomLink>
         )}
         <IconButton onClick={toggleThemeMode}>
-          {mode === "light" ? <LightMode /> : <DarkMode />}
+          {mode === "light" ? <DarkMode /> : <LightMode />}
         </IconButton>
       </Toolbar>
     </AppBar>
