@@ -25,11 +25,7 @@ import {
   DarkMode,
 } from "@mui/icons-material";
 
-import {
-  toggleThemeMode,
-  toggleThemeMode,
-  useThemeMode,
-} from "~/store/themeStore";
+import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
 import React from "react";
 import {
   openDrawer,
