@@ -5,11 +5,13 @@ import viteReact from "@vitejs/plugin-react";
 import netlify from "@netlify/vite-plugin-tanstack-start";
 
 export default defineConfig({
+  base: "/",
   server: {
     port: 3000,
   },
   build: {
     outDir: "dist",
+    sourcemap: true,
   },
   ssr: {
     noExternal: ["@mui/*"],
