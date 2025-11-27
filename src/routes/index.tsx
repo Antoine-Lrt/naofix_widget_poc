@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   return (
     <Typography textAlign="center" variant="h1">
-      Bienvenu sur NaoFix
+      Bienvenue sur NaoFix
     </Typography>
   );
 }
