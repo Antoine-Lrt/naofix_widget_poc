@@ -11,5 +11,10 @@ logs/
 # Build outputs
 dist/
 build/
-# Local Netlify folder
+
+# Deployment folders
 .netlify
+.vercel
+
+# TanStack
+.tanstack/
