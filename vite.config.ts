@@ -16,7 +16,11 @@ export default defineConfig({
   ssr: {
     noExternal: ["@mui/*"],
   },
-
+  routers: {
+    ssr: {
+      entry: "./src/routes/__root.tsx",
+    },
+  },
   plugins: [
     tsConfigPaths({
       projects: ["./tsconfig.json"],
