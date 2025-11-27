@@ -18,18 +18,22 @@ export const Route = createFileRoute("/layout_creator")({
 });
 
 function RouteComponent() {
-  const [columnMenuAnchorEl, setColumnMenuAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const columnMenuOpen = Boolean(columnMenuAnchorEl);
+  const [columnMenu, setColumnMenu] = React.useState<{
+    anchorEl: HTMLElement | null;
+    rowIndex: number | null;
+  }>({ anchorEl: null, rowIndex: null });
 
   const handleColumnMenuButtonClick = (
-    event: React.MouseEvent<HTMLElement>
+    event: React.MouseEvent<HTMLElement>,
+    rowIndex: number
   ) => {
-    setColumnMenuAnchorEl(event.currentTarget);
+    setColumnMenu({ anchorEl: event.currentTarget, rowIndex });
   };
+
   const handleColumnMenuButtonClose = () => {
-    setColumnMenuAnchorEl(null);
+    setColumnMenu({ anchorEl: null, rowIndex: null });
   };
+
   const { currentView } = useLayoutStore();
 
   // const [positions, setPositions] = useState<Record<string, string | null>>({
@@ -82,6 +86,11 @@ function RouteComponent() {
       </Grid>
       {rows && !isEmpty(rows)
         ? rows.map((row, rowIndex) => {
+            console.log(
+              "🚀 ~ layout_creator.tsx:85 ~ RouteComponent ~ row:",
+              row
+            );
+
             const columnsCount = row.columns.length;
             return (
               <Grid container spacing={1} size={12} key={rowIndex}>
@@ -96,10 +105,12 @@ function RouteComponent() {
                           : "Colonnes"
                       }
                       size="small"
-                      aria-controls={columnMenuOpen ? "basic-menu" : undefined}
+                      aria-controls={
+                        columnMenu.anchorEl ? "column-menu" : undefined
+                      }
                       aria-haspopup="true"
-                      aria-expanded={columnMenuOpen ? "true" : undefined}
-                      onClick={handleColumnMenuButtonClick}
+                      aria-expanded={Boolean(columnMenu.anchorEl)}
+                      onClick={(e) => handleColumnMenuButtonClick(e, rowIndex)}
                       icon={<ViewWeek />}
                       sx={{
                         bgcolor: "transparent",
@@ -110,8 +121,8 @@ function RouteComponent() {
                     />
                     <Menu
                       id="row-select-menu"
-                      anchorEl={columnMenuAnchorEl}
-                      open={columnMenuOpen}
+                      anchorEl={columnMenu.anchorEl}
+                      open={Boolean(columnMenu.anchorEl)}
                       onClose={handleColumnMenuButtonClose}
                       slotProps={{
                         list: {
@@ -124,13 +135,14 @@ function RouteComponent() {
                           <MenuItem
                             key={index}
                             data-value={option}
-                            onClick={(e) => {
-                              const value = e.currentTarget.dataset.value;
-                              updateLayoutColumns(
-                                rowIndex,
-                                Number(e.currentTarget.dataset.value)
-                              );
-                              handleColumnMenuButtonClose();
+                            onClick={() => {
+                              if (columnMenu.rowIndex !== null) {
+                                updateLayoutColumns(
+                                  columnMenu.rowIndex,
+                                  option
+                                );
+                                handleColumnMenuButtonClose();
+                              }
                             }}
                           >
                             {option} Colonnes
