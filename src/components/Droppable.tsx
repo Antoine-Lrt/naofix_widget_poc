@@ -7,31 +7,6 @@ import { updateColumnWidth } from "~/store/layoutStore";
 import { radiusMap } from "~/helpers/radiusMap";
 import { useThemeMode } from "~/store/themeStore";
 
-const AddWidgetInfo = () => {
-  const { borderRadius } = useThemeMode();
-  return (
-    <Stack direction="column" spacing={1} alignItems="center">
-      <Box
-        sx={{
-          bgcolor: "background.paper",
-          width: 58,
-          height: 58,
-          borderRadius: radiusMap[borderRadius],
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Widgets />
-      </Box>
-      <Typography variant="body2" color="secondary" textAlign="center">
-        Cliquez sur le bouton <strong>Widget</strong> et faites-le glisser votre
-        widget ici.
-      </Typography>
-    </Stack>
-  );
-};
-
 // Typage des props
 interface DroppableProps {
   column: {
@@ -100,7 +75,7 @@ export function Droppable({
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        {React.Children.count(children) === 0 ? <AddWidgetInfo /> : children}
+        {children}
       </Box>
 
       {widthConfigButton && (

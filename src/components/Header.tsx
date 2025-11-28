@@ -214,6 +214,7 @@ const CreatorPageToolComponent = () => {
           aria-expanded={currentModelMenuOpen ? "true" : undefined}
           onClick={handleModelMenuButtonClick}
           icon={<Sell />}
+          disabled={!!currentModule?.name === false}
           sx={{
             bgcolor: "transparent",
             "&:hover": {

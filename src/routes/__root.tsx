@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   createRootRoute,
+  useMatchRoute,
 } from "@tanstack/react-router";
 import { CacheProvider } from "@emotion/react";
 import {
@@ -182,24 +183,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const { close } = useModal("templateModal");
   const { currentView } = useLayoutStore();
   const { module = "", view_type = "" } = currentView || {};
-  const draggableMarkup = (
-    <>
-      <Draggable id="widget-1">Widget 1</Draggable>
-      <Draggable id="widget-2">Widget 2</Draggable>
-      <Draggable id="widget-3">Widget 3</Draggable>
-    </>
-  );
 
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
+  const matchRoute = useMatchRoute();
+  const isLayoutCreator = matchRoute({ to: "/layout_creator" });
 
-    if (!over) return;
-
-    // setPositions((prev) => ({
-    //   ...prev,
-    //   [active.id]: over.id,
-    // }));
-  }
+  React.useEffect(() => {
+    if (!isLayoutCreator) {
+      closeDrawer();
+    }
+  }, [isLayoutCreator]);
 
   return (
     <html>
@@ -208,18 +200,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body style={{ margin: 0 }}>
         <Providers>
-          <DndContext onDragEnd={handleDragEnd}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-              }}
-            >
-              <Header drawerIsOpen={drawerIsOpen} />
-              <Divider />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <Header drawerIsOpen={drawerIsOpen} />
+            <Divider />
 
-              {/* <Container
+            {/* <Container
               maxWidth="xl"
                 component="main"
                 sx={{
@@ -230,57 +221,30 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               >
                 {children}
               </Container> */}
-              <Stack
-                px={10}
-                component="main"
-                sx={{
-                  flex: 1,
-                  transition: "margin-right 0.3s",
-                  paddingBlock: 4,
-                  mr: drawerIsOpen ? `${DRAWER_WIDTH}` : 0,
-                }}
-              >
-                {children}
-              </Stack>
-
-              <Box component="footer" sx={{ mt: "auto", py: 2 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  ©2025 NaoFix
-                </Typography>
-              </Box>
-            </Box>
-
-            <Drawer
+            <Stack
+              px={10}
+              component="main"
               sx={{
-                width: DRAWER_WIDTH,
-                flexShrink: 0,
-                "& .MuiDrawer-paper": { width: DRAWER_WIDTH },
+                flex: 1,
+                flexGrow: 1,
+                transition: "margin-right 0.3s",
+                paddingBlock: 4,
+                mr: drawerIsOpen ? `${DRAWER_WIDTH}` : 0,
               }}
-              variant="persistent"
-              slotProps={{ paper: { sx: { bgcolor: "background.default" } } }}
-              anchor="right"
-              open={drawerIsOpen}
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <IconButton
-                  sx={{
-                    "&:hover": {
-                      bgcolor: "transparent",
-                      color: "primary.main",
-                    },
-                  }}
-                  onClick={closeDrawer}
-                >
-                  <KeyboardArrowRight />
-                </IconButton>
-                <Typography variant="h6">Widgets</Typography>
-              </Box>
-            </Drawer>
-          </DndContext>
+              {children}
+            </Stack>
+
+            <Box component="footer" sx={{ mt: "auto", py: 2 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+              >
+                ©2025 NaoFix
+              </Typography>
+            </Box>
+          </Box>
           <DefaultModal
             id="templateModal"
             size="lg"

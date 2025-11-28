@@ -50,8 +50,16 @@ export default function DefaultModal({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       fullWidth
-      sx={{
-        borderRadius: radiusMap[borderRadius],
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: radiusMap[borderRadius],
+            backgroundColor: "background.paper",
+            "& .MuiDialog-container": {
+              padding: 2,
+            },
+          },
+        },
       }}
       maxWidth={sizeMap[size ?? "md"]}
     >
