@@ -209,7 +209,9 @@ const CreatorPageToolComponent = () => {
                 onClick={(e) => {
                   const value = e.currentTarget.dataset.value;
                   if (value) {
-                    updateLayoutDevice(value);
+                    updateLayoutDevice(
+                      value as "computer" | "tablet" | "mobile"
+                    );
                   }
                   handleDeviceMenuButtonClose();
                 }}
