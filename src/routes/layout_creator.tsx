@@ -68,7 +68,7 @@ function RouteComponent() {
     rowIndex: number | null;
   }>({ anchorEl: null, rowIndex: null });
 
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleColumnMenuButtonClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -107,16 +107,28 @@ function RouteComponent() {
   const drawerIsOpen = useDrawer();
   const { close } = useModal("templateModal");
 
-  const [parent, setParent] = useState(null);
+  const [parent, setParent] = useState<string | null>(null);
   console.log("🚀 ~ layout_creator.tsx:85 ~ RouteComponent ~ parent:", parent);
 
   const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
 
-  function handleDragStart(event) {
+  interface DragStartEvent {
+    active: {
+      id: string | null;
+    };
+  }
+
+  function handleDragStart(event: DragStartEvent): void {
     setActiveId(event.active.id);
   }
 
-  function handleDragEnd(event) {
+  interface DragEndEvent {
+    over: {
+      id: string | null;
+    } | null;
+  }
+
+  function handleDragEnd(event: DragEndEvent): void {
     const { over } = event;
 
     setParent(over ? over.id : null);
