@@ -207,7 +207,6 @@ function RouteComponent() {
                         currentDevice === "mobile" ? "hidden" : "visible"
                       }
                     >
-                      ADD INPUT SAVE
                       <Chip
                         id="row-selector-button"
                         clickable
