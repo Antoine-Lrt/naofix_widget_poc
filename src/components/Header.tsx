@@ -387,7 +387,7 @@ export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
                 NaoFix Widget POC
               </StyledCustomLink>
             </Box>
-            <Stack>
+            {/* <Stack>
               <Box display="flex" gap={1}>
                 <StyledCustomLink disabled to="/notavailable">
                   Messagerie
@@ -402,7 +402,7 @@ export function Header({ drawerIsOpen }: { drawerIsOpen: boolean }) {
                   Configuration
                 </StyledCustomLink>
               </Box>
-            </Stack>
+            </Stack> */}
           </Box>
         </Stack>
         {isLayoutCreator ? (
