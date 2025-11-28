@@ -26,7 +26,12 @@ import { models, modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 import { useModal } from "~/store/modalStore";
 // Importation de DragOverlay pour la correction du z-index
-import { DndContext, DragOverlay } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  DragStartEvent,
+  DragEndEvent,
+} from "@dnd-kit/core";
 import { radiusMap } from "~/helpers/radiusMap";
 import { useThemeMode } from "~/store/themeStore";
 
@@ -112,26 +117,14 @@ function RouteComponent() {
 
   const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
 
-  interface DragStartEvent {
-    active: {
-      id: string | null;
-    };
-  }
-
   function handleDragStart(event: DragStartEvent): void {
-    setActiveId(event.active.id);
-  }
-
-  interface DragEndEvent {
-    over: {
-      id: string | null;
-    } | null;
+    setActiveId(event.active.id as string);
   }
 
   function handleDragEnd(event: DragEndEvent): void {
     const { over } = event;
 
-    setParent(over ? over.id : null);
+    setParent(over ? (over.id as string) : null);
     setActiveId(null);
   }
 
