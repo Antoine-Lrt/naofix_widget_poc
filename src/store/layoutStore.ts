@@ -24,7 +24,7 @@ export interface ViewStateType {
   model_name: string;
   view_type: string;
   row_count: number;
-  device: "desktop" | "tablet" | "mobile";
+  device: "computer" | "tablet" | "mobile";
   rows?: LayoutRow[];
 }
 
@@ -42,7 +42,7 @@ const initialLayoutState: LayoutStoreState = {
     model_name: "",
     view_type: "list",
     row_count: 1,
-    device: "desktop",
+    device: "computer",
     rows: [
       {
         id: "row-0",
@@ -81,6 +81,49 @@ export const applyLayoutTemplate = (template: ViewStateType) => {
   layoutStore.setState({
     ...layoutStore.state,
     currentView: { ...template, id: template.id },
+  });
+};
+
+export const updateLayoutDevice = (
+  device: "computer" | "tablet" | "mobile"
+) => {
+  const layout = getcurrentView();
+  if (!layout) return;
+
+  let defaultColumnsCount;
+  switch (device) {
+    case "computer":
+      defaultColumnsCount = 4;
+      break;
+    case "tablet":
+      defaultColumnsCount = 3;
+      break;
+    case "mobile":
+      defaultColumnsCount = 1;
+      break;
+    default:
+      defaultColumnsCount = 4;
+  }
+
+  const updatedRows = layout.rows?.map((row, rowIndex) => {
+    const newColumns: LayoutColumn[] = Array.from(
+      { length: defaultColumnsCount },
+      (_, i) => {
+        if (i < row.columns.length) return row.columns[i];
+        return {
+          id: `column-${rowIndex}-${i}`,
+          order: i,
+          width: "md",
+          widgets: [],
+        };
+      }
+    );
+    return { ...row, columns: newColumns };
+  });
+
+  layoutStore.setState({
+    ...layoutStore.state,
+    currentView: { ...layout, device, rows: updatedRows },
   });
 };
 
@@ -234,3 +277,6 @@ export const useDrawer = () =>
 
 export const usePreviewMode = () =>
   useStore(layoutStore, (state) => state.previewMode);
+
+export const useDevice = () =>
+  useStore(layoutStore, (state) => state.currentView?.device);

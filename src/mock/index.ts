@@ -1,13 +1,13 @@
 import {
   EmailOutlined,
   AssignmentTurnedInOutlined,
-  CalendarMonthOutlined,
-  CheckBoxOutlined,
-  AccessTimeOutlined,
   Article,
   CalendarMonth,
   List,
   Build,
+  Computer,
+  TabletMac,
+  PhoneIphone,
 } from "@mui/icons-material";
 
 export const modules = [
@@ -59,6 +59,13 @@ export const viewTypes = [
   { id: "list", label: "Liste", icon: List },
   { id: "detail", label: "Détail", icon: Article },
   { id: "calendar", label: "Calendrier", icon: CalendarMonth },
+];
+
+export const deviceTypes = [
+  { id: "computer", label: "Ordinateur", icon: Computer },
+
+  { id: "tablet", label: "Tablette", icon: TabletMac },
+  { id: "mobile", label: "Mobile", icon: PhoneIphone },
 ];
 
 export const MockedTemplatesCategories = [

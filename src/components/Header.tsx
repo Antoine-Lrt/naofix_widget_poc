@@ -21,10 +21,11 @@ import {
   DarkMode,
   LightMode,
   Sell,
+  Devices,
 } from "@mui/icons-material";
 
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
-import React from "react";
+import React, { use } from "react";
 import {
   openDrawer,
   closeDrawer,
@@ -35,9 +36,10 @@ import {
   usePreviewMode,
   useDrawer,
   updateLayoutModelName,
+  updateLayoutDevice,
 } from "~/store/layoutStore";
 import { useMatchRoute } from "@tanstack/react-router";
-import { models, modules, viewTypes } from "~/mock";
+import { deviceTypes, models, modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 import { useModal } from "~/store/modalStore";
 
@@ -60,6 +62,18 @@ const StyledCustomLink = styled(CustomLink)(
 //
 
 const CreatorPageToolComponent = () => {
+  // DEVICE
+  const [currentDeviceMenuAnchorEl, setCurrentDeviceMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const currentDeviceMenuOpen = Boolean(currentDeviceMenuAnchorEl);
+  const handleDeviceMenuButtonClick = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    setCurrentDeviceMenuAnchorEl(event.currentTarget);
+  };
+  const handleDeviceMenuButtonClose = () => {
+    setCurrentDeviceMenuAnchorEl(null);
+  };
   // MODULE
   const [currentModuleMenuAnchorEl, setCurrentModuleMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -115,7 +129,7 @@ const CreatorPageToolComponent = () => {
 
   const previewMode = usePreviewMode();
 
-  const { row_count, module, view_type, model_name } = currentView || {
+  const { row_count, module, view_type, model_name, device } = currentView || {
     row_count: 1,
     module: "",
     view_type: "",
@@ -123,6 +137,8 @@ const CreatorPageToolComponent = () => {
   };
 
   const rowsOptionsMap = [1, 2, 3, 4];
+  const currentDevice = deviceTypes.find((d) => d.id === device);
+  const DeviceIcon = currentDevice?.icon;
   const currentModule = modules.find((m) => m.name === module);
   const currentType = viewTypes.find((t) => t.id === view_type);
   const currentModel = models.find((m) => m.name === model_name);
@@ -156,6 +172,53 @@ const CreatorPageToolComponent = () => {
         </Button>
       </Box>
 
+      <Box>
+        <Chip
+          id="device-selector-button"
+          clickable
+          label={currentDevice ? currentDevice.label : "Appareils"}
+          size="small"
+          aria-controls={currentDeviceMenuOpen ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={currentDeviceMenuOpen ? "true" : undefined}
+          onClick={handleDeviceMenuButtonClick}
+          icon={DeviceIcon ? <DeviceIcon /> : <Devices />}
+          sx={{
+            bgcolor: "transparent",
+            "&:hover": {
+              bgcolor: "secondary",
+            },
+          }}
+        />
+        <Menu
+          id="module-select-menu"
+          anchorEl={currentDeviceMenuAnchorEl}
+          open={currentDeviceMenuOpen}
+          onClose={handleDeviceMenuButtonClose}
+          slotProps={{
+            list: {
+              "aria-labelledby": "basic-button",
+            },
+          }}
+        >
+          {deviceTypes &&
+            deviceTypes.map((device, index) => (
+              <MenuItem
+                key={index}
+                data-value={device.id}
+                onClick={(e) => {
+                  const value = e.currentTarget.dataset.value;
+                  if (value) {
+                    updateLayoutDevice(value);
+                  }
+                  handleDeviceMenuButtonClose();
+                }}
+              >
+                {device.label}
+              </MenuItem>
+            ))}
+        </Menu>
+      </Box>
       <Box>
         <Chip
           id="module-selector-button"

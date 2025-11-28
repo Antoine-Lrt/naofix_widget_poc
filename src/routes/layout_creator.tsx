@@ -14,6 +14,7 @@ import {
 import {
   closeDrawer,
   updateLayoutColumns,
+  useDevice,
   useDrawer,
   useLayoutStore,
 } from "~/store/layoutStore";
@@ -99,10 +100,40 @@ function RouteComponent() {
     lg: 8,
   };
 
-  const columnsOptionsMap = [1, 2, 3, 4];
+  const currentDevice = useDevice();
   const currentModule = modules.find((m) => m.name === module);
   const currentType = viewTypes.find((t) => t.id === view_type);
   const currentModel = models.find((m) => m.name === model_name);
+
+  let columnsOptionsMap;
+  switch (currentDevice) {
+    case "computer":
+      columnsOptionsMap = [1, 2, 3, 4];
+      break;
+    case "tablet":
+      columnsOptionsMap = [1, 2, 3];
+      break;
+    case "mobile":
+      columnsOptionsMap = null;
+      break;
+    default:
+      columnsOptionsMap = [1, 2, 3, 4];
+  }
+
+  let layoutWidth;
+  switch (currentDevice) {
+    case "computer":
+      layoutWidth = 12;
+      break;
+    case "tablet":
+      layoutWidth = 7;
+      break;
+    case "mobile":
+      layoutWidth = 4;
+      break;
+    default:
+      layoutWidth = 12;
+  }
 
   type FlexWidth = "xs" | "sm" | "md" | "lg";
 
@@ -113,7 +144,6 @@ function RouteComponent() {
   const { close } = useModal("templateModal");
 
   const [parent, setParent] = useState<string | null>(null);
-  console.log("🚀 ~ layout_creator.tsx:85 ~ RouteComponent ~ parent:", parent);
 
   const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
 
@@ -163,9 +193,20 @@ function RouteComponent() {
           ? rows.map((row, rowIndex) => {
               const columnsCount = row.columns.length;
               return (
-                <Grid container spacing={1} size={12} key={rowIndex}>
+                <Grid
+                  container
+                  spacing={1}
+                  size={12}
+                  key={rowIndex}
+                  justifyContent="center"
+                >
                   <Grid size={12}>
-                    <Box textAlign="center">
+                    <Box
+                      textAlign="center"
+                      visibility={
+                        currentDevice === "mobile" ? "hidden" : "visible"
+                      }
+                    >
                       <Chip
                         id="row-selector-button"
                         clickable
@@ -223,7 +264,7 @@ function RouteComponent() {
                       </Menu>
                     </Box>
                   </Grid>
-                  <Grid container size={12} flexWrap="nowrap">
+                  <Grid container size={layoutWidth} flexWrap="nowrap">
                     {row.columns.map((column, columnIndex) => {
                       return (
                         <Grid
