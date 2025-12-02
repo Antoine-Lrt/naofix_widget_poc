@@ -9,6 +9,7 @@ import {
   TabletMac,
   PhoneIphone,
 } from "@mui/icons-material";
+import { min } from "lodash";
 
 export const modules = [
   {
@@ -231,3 +232,38 @@ export const MockedTemplates = [
   ...helpdeskTemplate,
   ...interventionTemplate,
 ];
+
+export const MockedWidgetsTypes = [
+  { id: "list", label: "Liste" },
+  { id: "detail", label: "Détail" },
+  { id: "calendar", label: "Calendrier" },
+  { id: "card", label: "Carte" },
+  { id: "stats", label: "Statistiques" },
+  { id: "button", label: "Bouton" },
+];
+
+const widgetsListComponents = [
+  {
+    id: "list.md",
+    is_disabled: false,
+    widget_type: "list",
+    min_width: "md",
+    device: "desktop",
+  },
+  {
+    id: "list.xs",
+    is_disabled: false,
+    widget_type: "list",
+    min_width: "xs",
+    device: "desktop",
+  },
+  {
+    id: "list.sm",
+    is_disabled: false,
+    widget_type: "list",
+    min_width: "sm",
+    device: "desktop",
+  },
+];
+
+export const WidgetsList = [...widgetsListComponents];

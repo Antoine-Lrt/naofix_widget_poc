@@ -1,13 +1,21 @@
 import React, { ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { Box, Chip, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from "@mui/material";
 
-import { Height, Widgets } from "@mui/icons-material";
-import { updateColumnWidth } from "~/store/layoutStore";
+import { Add, Height, ViewModule, Widgets } from "@mui/icons-material";
+import { LayoutColumn, updateColumnWidth } from "~/store/layoutStore";
 import { radiusMap } from "~/helpers/radiusMap";
 import { useThemeMode } from "~/store/themeStore";
+import { useModal } from "~/store/modalStore";
 
-// Typage des props
 interface DroppableProps {
   column: {
     id: string;
@@ -20,7 +28,7 @@ interface DroppableProps {
   widthConfigButton?: boolean;
 }
 
-export function Droppable({
+export function WidgetsContainer({
   column,
   columnIndex,
   rowIndex,
@@ -28,7 +36,13 @@ export function Droppable({
   widthConfigButton,
 }: DroppableProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [currentColumInfos, setCurrentColumInfos] = React.useState<null | {
+    id: string;
+    width?: "xs" | "sm" | "md" | "lg";
+  }>(null);
   const open = Boolean(anchorEl);
+
+  const { open: openWidgetsModal } = useModal("widgetsModal");
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -50,18 +64,50 @@ export function Droppable({
     id: column.id,
   });
 
+  const handleOpenWidgetsModal = (
+    e: React.MouseEvent<HTMLElement>,
+    column: LayoutColumn
+  ) => {
+    openWidgetsModal({
+      rowIndex,
+      columnIndex,
+      columnId: column.id,
+      width: column.width,
+    });
+  };
+
   return (
     <Stack spacing={1}>
-      <Box>
-        <Typography
-          variant="caption"
-          margin={0}
-          color="secondary"
-          lineHeight={0}
-        >
-          {column.widgets.length} widgets
-        </Typography>
-      </Box>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Box>
+          <Chip
+            id="add-widget-button"
+            clickable
+            label="Ajouter un widget"
+            size="small"
+            aria-controls="basic-menu"
+            aria-haspopup="true"
+            onClick={(event) => handleOpenWidgetsModal(event, column)}
+            icon={<Add />}
+            sx={{
+              bgcolor: "transparent",
+              "&:hover": {
+                bgcolor: "transparent",
+              },
+            }}
+          />
+        </Box>
+        <Box>
+          <Typography
+            variant="caption"
+            margin={0}
+            color="secondary"
+            lineHeight={0}
+          >
+            {column.widgets.length} widgets
+          </Typography>
+        </Box>
+      </Stack>
 
       <Box
         ref={setNodeRef}

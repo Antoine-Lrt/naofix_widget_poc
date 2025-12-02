@@ -210,6 +210,30 @@ export const updateColumnWidth = (
   });
 };
 
+export const addWidgetToColumn = (columnId: string, widgetId: string) => {
+  const layout = getcurrentView();
+  if (!layout || !layout.rows) return;
+
+  const newRows = layout.rows.map((row) => {
+    const newColumns = row.columns.map((col) => {
+      if (col.id === columnId) {
+        const newWidgetInstanceId = `${widgetId}-${Date.now()}`;
+        return {
+          ...col,
+          widgets: [...col.widgets, newWidgetInstanceId],
+        };
+      }
+      return col;
+    });
+    return { ...row, columns: newColumns };
+  });
+
+  layoutStore.setState({
+    ...layoutStore.state,
+    currentView: { ...layout, rows: newRows },
+  });
+};
+
 export const updateLayoutModule = (module: string) => {
   const layout = getcurrentView();
   if (!layout) return;

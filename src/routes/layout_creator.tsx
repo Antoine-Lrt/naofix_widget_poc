@@ -3,6 +3,7 @@ import z from "zod";
 import {
   Box,
   Chip,
+  Collapse,
   Drawer,
   Grid,
   IconButton,
@@ -12,14 +13,14 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  addWidgetToColumn,
   closeDrawer,
   updateLayoutColumns,
   useDevice,
   useDrawer,
   useLayoutStore,
 } from "~/store/layoutStore";
-import { Draggable } from "~/components/Draggable";
-import { Droppable } from "~/components/Droppable";
+import { WidgetsContainer } from "~/components/WidgetsContainer";
 import { isEmpty } from "lodash-es";
 import React, { useState } from "react";
 import { KeyboardArrowRight, ViewWeek, Widgets } from "@mui/icons-material";
@@ -35,6 +36,8 @@ import {
 } from "@dnd-kit/core";
 import { radiusMap } from "~/helpers/radiusMap";
 import { useThemeMode } from "~/store/themeStore";
+import ListDesktopMd from "~/components/widgets/List/desktop/List.desktop.md";
+import DrawerWidgetsList from "~/components/widgets/common/DrawerWidgetsList";
 
 export const Route = createFileRoute("/layout_creator")({
   validateSearch: z.object({
@@ -145,14 +148,26 @@ function RouteComponent() {
 
   const [parent, setParent] = useState<string | null>(null);
 
-  const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
+  const draggableMarkup = (
+    <Box id="list-widget-1">
+      <Typography variant="body2" color="text.secondary">
+        Faites glisser et déposez les widgets dans l'une des colonnes.
+      </Typography>
+    </Box>
+  );
 
   function handleDragStart(event: DragStartEvent): void {
     setActiveId(event.active.id as string);
   }
 
   function handleDragEnd(event: DragEndEvent): void {
-    const { over } = event;
+    const { active, over } = event;
+
+    if (over) {
+      const columnId = over.id as string;
+      const widgetId = active.id as string;
+      addWidgetToColumn(columnId, widgetId);
+    }
 
     setParent(over ? (over.id as string) : null);
     setActiveId(null);
@@ -173,7 +188,7 @@ function RouteComponent() {
       </DragOverlay>
 
       <Grid container spacing={2} zIndex={2}>
-        <Grid>
+        {/* <Grid>
           <Typography variant="h3" fontWeight="bolder">
             {currentModule ? currentModule.label.toLocaleUpperCase() : "Module"}
           </Typography>
@@ -188,7 +203,7 @@ function RouteComponent() {
               {currentModel?.label}
             </Typography>
           )}
-        </Grid>
+        </Grid> */}
         {rows && !isEmpty(rows)
           ? rows.map((row, rowIndex) => {
               const columnsCount = row.columns.length;
@@ -274,7 +289,7 @@ function RouteComponent() {
                             minWidth: 0,
                           }}
                         >
-                          <Droppable
+                          <WidgetsContainer
                             column={column}
                             columnIndex={columnIndex}
                             rowIndex={rowIndex}
@@ -290,7 +305,7 @@ function RouteComponent() {
                               {widget}
                             </Draggable>
                           ))} */}
-                          </Droppable>
+                          </WidgetsContainer>
                         </Grid>
                       );
                     })}
@@ -300,7 +315,7 @@ function RouteComponent() {
             })
           : null}
       </Grid>
-      <Drawer
+      {/* <Drawer
         sx={{
           width: DRAWER_WIDTH,
           flexShrink: 0,
@@ -325,8 +340,16 @@ function RouteComponent() {
           </IconButton>
           <Typography variant="h6">Widgets</Typography>
         </Box>
+        <Box p={2}>
+          <Typography variant="body2" color="text.secondary">
+            Faites glisser et déposez les widgets dans l'une des colonnes.
+          </Typography>
+        </Box>
+        <Box>
+          <DrawerWidgetsList widgets={draggableMarkup} />
+        </Box>
         <Box p={2}>{parent === null ? draggableMarkup : null}</Box>
-      </Drawer>
+      </Drawer> */}
     </DndContext>
   );
 }

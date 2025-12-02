@@ -27,8 +27,6 @@ import {
 import { toggleThemeMode, useThemeMode } from "~/store/themeStore";
 import React, { use } from "react";
 import {
-  openDrawer,
-  closeDrawer,
   updateLayoutModule,
   updateLayoutRows,
   updateLayoutViewType,
@@ -161,6 +159,25 @@ const CreatorPageToolComponent = () => {
         </Button>
       </Box>
       <Box>
+        <Chip
+          id="module-selector-button"
+          clickable
+          label={currentModule ? currentModule.label : "Modules"}
+          size="small"
+          aria-controls={currentModuleMenuOpen ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={currentModuleMenuOpen ? "true" : undefined}
+          onClick={handleModuleMenuButtonClick}
+          icon={<ViewModule />}
+          sx={{
+            bgcolor: "transparent",
+            "&:hover": {
+              bgcolor: "secondary",
+            },
+          }}
+        />
+      </Box>
+      {/* <Box>
         <Button
           variant="contained"
           color="primary"
@@ -170,8 +187,8 @@ const CreatorPageToolComponent = () => {
         >
           Widgets
         </Button>
-      </Box>
-
+      </Box> */}
+      <Divider orientation="vertical" flexItem />
       <Box>
         <Chip
           id="device-selector-button"
@@ -221,7 +238,7 @@ const CreatorPageToolComponent = () => {
             ))}
         </Menu>
       </Box>
-      <Box>
+      {/* <Box>
         <Chip
           id="module-selector-button"
           clickable
@@ -267,7 +284,7 @@ const CreatorPageToolComponent = () => {
               </MenuItem>
             ))}
         </Menu>
-      </Box>
+      </Box> */}
       <Box>
         <Chip
           id="model-selector-button"
