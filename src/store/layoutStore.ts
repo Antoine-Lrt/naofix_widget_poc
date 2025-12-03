@@ -1,8 +1,19 @@
 import { Store, useStore } from "@tanstack/react-store";
+import { flexMap } from "~/constant/layoutConstants";
+import { isWidgetCompatible } from "~/utils/isCompatibleWidget";
+import { openModal as openIncompatibleWidgetsModal } from "./modalStore";
+
+export interface WidgetType {
+  id: string;
+  is_disabled: boolean;
+  widget_type: "list" | "detail" | "calendar" | "card" | "stats" | "button";
+  min_width: "xs" | "sm" | "md" | "lg";
+  device: "desktop" | "tablet" | "mobile";
+}
 
 export interface LayoutColumn {
   id: string;
-  widgets: string[];
+  widgets: WidgetType[];
   width?: "xs" | "sm" | "md" | "lg";
   order?: number;
 }
@@ -193,15 +204,52 @@ export const updateColumnWidth = (
   const layout = getcurrentView();
   if (!layout) return;
 
-  const row = layout.rows![rowIndex];
+  const row = layout.rows?.[rowIndex];
   if (!row) return;
 
-  const newColumnData = row.columns.map((c, idx) =>
+  const column = row.columns[columnIndex];
+  if (!column) return;
+
+  const incompatibleWidgets = column.widgets.filter((widget) => {
+    return !isWidgetCompatible(widget.min_width as keyof typeof flexMap, width);
+  });
+
+  if (incompatibleWidgets.length > 0) {
+    openIncompatibleWidgetsModal(
+      "warningWidgetsModal",
+      {
+        widgets: incompatibleWidgets,
+        targetWidth: width,
+      },
+      () => {
+        const filteredWidgets = column.widgets.filter(
+          (w) => !incompatibleWidgets.includes(w)
+        );
+
+        const newColumns = row.columns.map((c, idx) =>
+          idx === columnIndex ? { ...c, width, widgets: filteredWidgets } : c
+        );
+
+        const newRows = layout.rows.map((r, idx) =>
+          idx === rowIndex ? { ...r, columns: newColumns } : r
+        );
+
+        layoutStore.setState({
+          ...layoutStore.state,
+          currentView: { ...layout, rows: newRows },
+        });
+      }
+    );
+
+    return;
+  }
+
+  const newColumns = row.columns.map((c, idx) =>
     idx === columnIndex ? { ...c, width } : c
   );
 
-  const newRows = layout.rows!.map((r, idx) =>
-    idx === rowIndex ? { ...r, columns: newColumnData } : r
+  const newRows = layout.rows.map((r, idx) =>
+    idx === rowIndex ? { ...r, columns: newColumns } : r
   );
 
   layoutStore.setState({
@@ -210,17 +258,41 @@ export const updateColumnWidth = (
   });
 };
 
-export const addWidgetToColumn = (columnId: string, widgetId: string) => {
+export const addWidgetToColumn = (columnId: string, widget: string) => {
   const layout = getcurrentView();
   if (!layout || !layout.rows) return;
 
   const newRows = layout.rows.map((row) => {
     const newColumns = row.columns.map((col) => {
       if (col.id === columnId) {
-        const newWidgetInstanceId = `${widgetId}-${Date.now()}`;
         return {
           ...col,
-          widgets: [...col.widgets, newWidgetInstanceId],
+          widgets: [...col.widgets, widget],
+        };
+      }
+      return col;
+    });
+
+    return { ...row, columns: newColumns };
+  });
+
+  layoutStore.setState({
+    ...layoutStore.state,
+    currentView: { ...layout, rows: newRows },
+  });
+};
+
+export const removeWidgetFromColumn = (columnId: string, widgetId: string) => {
+  const layout = getcurrentView();
+  if (!layout || !layout.rows) return;
+
+  const newRows = layout.rows.map((row) => {
+    const newColumns = row.columns.map((col) => {
+      if (col.id === columnId) {
+        const newWidgetInstanceId = col.widgets.filter((w) => w !== widgetId);
+        return {
+          ...col,
+          widgets: newWidgetInstanceId,
         };
       }
       return col;

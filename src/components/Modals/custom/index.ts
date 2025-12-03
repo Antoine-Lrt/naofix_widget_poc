@@ -1,4 +1,5 @@
 import WidgetsModal from "./WidgetsModal/WidgetModalCore";
-import LayoutTemplatesModal from "./LayouTemplatsModal/LayoutTemplatesModalCore";
+import LayoutTemplatesModal from "./LayoutTemplatesModal/LayoutTemplatesModalCore";
+import WarningWidgetsModal from "./WarningWidgetsModal/WarningWidgetModalCore";
 
-export { WidgetsModal, LayoutTemplatesModal };
+export { WidgetsModal, LayoutTemplatesModal, WarningWidgetsModal };

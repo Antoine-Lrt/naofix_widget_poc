@@ -37,10 +37,6 @@ export default function WidgetModalContent() {
     columnId: string;
     width?: "xs" | "sm" | "md" | "lg";
   }>("widgetsModal");
-  console.log(
-    "🚀 ~ WidgetModalContent.tsx:32 ~ WidgetModalContent ~ detail:",
-    detail
-  );
 
   const filteredWidgets = WidgetsList.filter((widget) => {
     const widgetMinWidth = widget.min_width as "xs" | "sm" | "md" | "lg";
@@ -55,7 +51,7 @@ export default function WidgetModalContent() {
   const handleSelectWidget = (widget) => {
     if (!detail) return;
 
-    addWidgetToColumn(detail.rowIndex, detail.columnIndex, widget.id);
+    addWidgetToColumn(detail.columnId, widget);
 
     closeWidgetsModal();
   };

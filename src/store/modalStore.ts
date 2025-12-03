@@ -5,6 +5,7 @@ import { Store, useStore } from "@tanstack/react-store";
 export interface ModalState<T = any> {
   isOpen: boolean;
   detail?: T;
+  onConfirm?: () => void;
 }
 
 export interface ModalsStoreState {
@@ -21,10 +22,16 @@ export const modalsStore = new Store<ModalsStoreState>(initialModalsState);
 
 // ------------------ ACTIONS ------------------
 
-export const openModal = <T = any>(modalId: string, detail?: T) => {
+export const openModal = <T = any>(
+  modalId: string,
+  detail?: T,
+  onConfirm?: () => void
+) => {
+  console.log("🚀 ~ modalStore.ts:30 ~ openModal ~ detail:", detail);
+
   modalsStore.setState((prev) => ({
     ...prev,
-    [modalId]: { isOpen: true, detail },
+    [modalId]: { isOpen: true, detail, onConfirm },
   }));
 };
 
@@ -51,10 +58,13 @@ export const useModal = <T = any>(modalId: string) => {
     modalsStore,
     (state) => state[modalId] ?? { isOpen: false }
   );
+
   return {
     isOpen: modal.isOpen,
     detail: modal.detail as T | undefined,
-    open: (detail?: T) => openModal(modalId, detail),
+    onConfirm: modal.onConfirm,
+    open: (detail?: T, onConfirm?: () => void) =>
+      openModal(modalId, detail, onConfirm),
     close: () => closeModal(modalId),
     toggle: (detail?: T) => toggleModal(modalId, detail),
   };

@@ -49,7 +49,11 @@ import {
   viewTypes,
 } from "~/mock";
 import { radiusMap } from "~/helpers/radiusMap";
-import { LayoutTemplatesModal, WidgetsModal } from "~/components/Modals/custom";
+import {
+  LayoutTemplatesModal,
+  WarningWidgetsModal,
+  WidgetsModal,
+} from "~/components/Modals/custom";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -138,6 +142,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </Box>
           <LayoutTemplatesModal module={module} />
           <WidgetsModal />
+          <WarningWidgetsModal />
         </Providers>
 
         <TanStackRouterDevtools position="bottom-right" />

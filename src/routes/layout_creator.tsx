@@ -2,19 +2,25 @@ import { createFileRoute } from "@tanstack/react-router";
 import z from "zod";
 import {
   Box,
+  Button,
+  Card,
+  CardContent,
   Chip,
   Collapse,
   Drawer,
   Grid,
+  Icon,
   IconButton,
   Menu,
   MenuItem,
+  Paper,
   Stack,
   Typography,
 } from "@mui/material";
 import {
   addWidgetToColumn,
   closeDrawer,
+  removeWidgetFromColumn,
   updateLayoutColumns,
   useDevice,
   useDrawer,
@@ -23,7 +29,13 @@ import {
 import { WidgetsContainer } from "~/components/WidgetsContainer";
 import { isEmpty } from "lodash-es";
 import React, { useState } from "react";
-import { KeyboardArrowRight, ViewWeek, Widgets } from "@mui/icons-material";
+import {
+  Delete,
+  Edit,
+  KeyboardArrowRight,
+  ViewWeek,
+  Widgets,
+} from "@mui/icons-material";
 import { models, modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 import { useModal } from "~/store/modalStore";
@@ -178,17 +190,17 @@ function RouteComponent() {
   }
 
   return (
-    <DndContext
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
-    >
-      <DragOverlay style={{ zIndex: 9999 }}>
-        {activeId ? draggableMarkup : null}
-      </DragOverlay>
-
+    // <DndContext
+    //   onDragStart={handleDragStart}
+    //   onDragEnd={handleDragEnd}
+    //   onDragCancel={handleDragCancel}
+    // >
+    //   <DragOverlay style={{ zIndex: 9999 }}>
+    //     {activeId ? draggableMarkup : null}
+    //   </DragOverlay>
+    <Stack>
       <Grid container spacing={2} zIndex={2}>
-        {/* <Grid>
+        <Grid>
           <Typography variant="h3" fontWeight="bolder">
             {currentModule ? currentModule.label.toLocaleUpperCase() : "Module"}
           </Typography>
@@ -203,7 +215,7 @@ function RouteComponent() {
               {currentModel?.label}
             </Typography>
           )}
-        </Grid> */}
+        </Grid>
         {rows && !isEmpty(rows)
           ? rows.map((row, rowIndex) => {
               const columnsCount = row.columns.length;
@@ -295,16 +307,95 @@ function RouteComponent() {
                             rowIndex={rowIndex}
                             widthConfigButton={columnsCount > 1}
                           >
-                            {parent === column.id && activeId === null ? (
+                            {column.widgets &&
+                              !isEmpty(column.widgets) &&
+                              column.widgets.map((widget, index) => {
+                                return (
+                                  <Card
+                                    key={index}
+                                    elevation={0}
+                                    sx={{
+                                      height: "100%",
+                                      position: "relative",
+                                      overflow: "hidden",
+                                      cursor: "pointer",
+                                      border: "1px solid",
+                                      borderColor: "divider",
+                                      transition: "all 0.2s ease",
+
+                                      "&:hover .contentWrapper": {
+                                        filter: "blur(4px)",
+                                        transform: "scale(1.02)",
+                                      },
+                                      "&:hover .hoverOverlay": {
+                                        opacity: 1,
+                                        pointerEvents: "auto",
+                                      },
+                                    }}
+                                  >
+                                    <Box
+                                      className="contentWrapper"
+                                      sx={{
+                                        height: "100%",
+                                        transition:
+                                          "filter 0.2s ease, transform 0.2s ease",
+                                      }}
+                                    >
+                                      <CardContent
+                                        sx={{
+                                          height: "100%",
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          justifyContent: "space-between",
+                                        }}
+                                      >
+                                        {widget.id}
+                                      </CardContent>
+                                    </Box>
+
+                                    <Box
+                                      className="hoverOverlay"
+                                      sx={{
+                                        position: "absolute",
+                                        inset: 0,
+                                        opacity: 0,
+                                        pointerEvents: "none",
+                                        transition: "opacity 0.2s ease",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <IconButton
+                                        color="primary"
+                                        onClick={() =>
+                                          alert("Editer le widget")
+                                        }
+                                      >
+                                        <Edit />
+                                      </IconButton>
+                                      <IconButton
+                                        color="error"
+                                        onClick={() =>
+                                          removeWidgetFromColumn(
+                                            column.id,
+                                            widget
+                                          )
+                                        }
+                                      >
+                                        <Delete />
+                                      </IconButton>
+                                    </Box>
+                                  </Card>
+                                );
+                              })}
+                            <AddWidgetInfo />
+
+                            {/* {parent === column.id && activeId === null ? (
                               draggableMarkup
                             ) : (
-                              <AddWidgetInfo />
                             )}
-                            {/* {column.widgets.map((widget) => (
-                            <Draggable key={widget} id={widget}>
-                              {widget}
-                            </Draggable>
-                          ))} */}
+                            */}
                           </WidgetsContainer>
                         </Grid>
                       );
@@ -315,41 +406,42 @@ function RouteComponent() {
             })
           : null}
       </Grid>
-      {/* <Drawer
-        sx={{
-          width: DRAWER_WIDTH,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH },
-        }}
-        variant="persistent"
-        slotProps={{ paper: { sx: { bgcolor: "background.default" } } }}
-        anchor="right"
-        open={drawerIsOpen}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <IconButton
-            sx={{
-              "&:hover": {
-                bgcolor: "transparent",
-                color: "primary.main",
-              },
-            }}
-            onClick={closeDrawer}
-          >
-            <KeyboardArrowRight />
-          </IconButton>
-          <Typography variant="h6">Widgets</Typography>
-        </Box>
-        <Box p={2}>
-          <Typography variant="body2" color="text.secondary">
-            Faites glisser et déposez les widgets dans l'une des colonnes.
-          </Typography>
-        </Box>
-        <Box>
-          <DrawerWidgetsList widgets={draggableMarkup} />
-        </Box>
-        <Box p={2}>{parent === null ? draggableMarkup : null}</Box>
-      </Drawer> */}
-    </DndContext>
+    </Stack>
+    // {/* <Drawer
+    //   sx={{
+    //     width: DRAWER_WIDTH,
+    //     flexShrink: 0,
+    //     "& .MuiDrawer-paper": { width: DRAWER_WIDTH },
+    //   }}
+    //   variant="persistent"
+    //   slotProps={{ paper: { sx: { bgcolor: "background.default" } } }}
+    //   anchor="right"
+    //   open={drawerIsOpen}
+    // >
+    //   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+    //     <IconButton
+    //       sx={{
+    //         "&:hover": {
+    //           bgcolor: "transparent",
+    //           color: "primary.main",
+    //         },
+    //       }}
+    //       onClick={closeDrawer}
+    //     >
+    //       <KeyboardArrowRight />
+    //     </IconButton>
+    //     <Typography variant="h6">Widgets</Typography>
+    //   </Box>
+    //   <Box p={2}>
+    //     <Typography variant="body2" color="text.secondary">
+    //       Faites glisser et déposez les widgets dans l'une des colonnes.
+    //     </Typography>
+    //   </Box>
+    //   <Box>
+    //     <DrawerWidgetsList widgets={draggableMarkup} />
+    //   </Box>
+    //   <Box p={2}>{parent === null ? draggableMarkup : null}</Box>
+    // </Drawer> */}
+    // </DndContext>
   );
 }
