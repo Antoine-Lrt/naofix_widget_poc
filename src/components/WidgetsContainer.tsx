@@ -15,6 +15,7 @@ import { LayoutColumn, updateColumnWidth } from "~/store/layoutStore";
 import { radiusMap } from "~/helpers/radiusMap";
 import { useThemeMode } from "~/store/themeStore";
 import { useModal } from "~/store/modalStore";
+import { getColumnsWidthOptionsMap } from "~/utils/getColumnsWidthOptionsMap";
 
 interface DroppableProps {
   column: {
@@ -53,12 +54,7 @@ export function WidgetsContainer({
 
   const { borderRadius } = useThemeMode();
 
-  const widthOptionsMap = {
-    xs: { label: "Étroite", value: "xs" },
-    sm: { label: "Petite", value: "sm" },
-    md: { label: "Moyenne", value: "md" },
-    lg: { label: "Large", value: "lg" },
-  };
+  const widthOptionsMap = getColumnsWidthOptionsMap(rowIndex);
 
   const { isOver, setNodeRef } = useDroppable({
     id: column.id,

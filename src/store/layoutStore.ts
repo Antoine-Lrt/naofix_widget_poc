@@ -176,7 +176,16 @@ export const updateLayoutColumns = (rowIndex: number, columns: number) => {
   const newColumnData: LayoutColumn[] = Array.from(
     { length: columns },
     (_, i) => {
-      if (i < row.columns.length) return row.columns[i];
+      if (i < row.columns.length) {
+        const col = { ...row.columns[i] };
+
+        if (columns === 2 && col.width === "xs") {
+          col.width = "md";
+        }
+
+        return col;
+      }
+
       return {
         id: `column-${rowIndex}-${i}`,
         order: i,

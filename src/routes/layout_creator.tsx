@@ -200,22 +200,6 @@ function RouteComponent() {
     //   </DragOverlay>
     <Stack>
       <Grid container spacing={2} zIndex={2}>
-        <Grid>
-          <Typography variant="h3" fontWeight="bolder">
-            {currentModule ? currentModule.label.toLocaleUpperCase() : "Module"}
-          </Typography>
-          {currentType && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              textTransform="uppercase"
-              lineHeight={0.5}
-            >
-              NOUVELLE VUE DE {currentType?.label} POUR LE MODÈLE{" "}
-              {currentModel?.label}
-            </Typography>
-          )}
-        </Grid>
         {rows && !isEmpty(rows)
           ? rows.map((row, rowIndex) => {
               const columnsCount = row.columns.length;
