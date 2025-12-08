@@ -38,7 +38,11 @@ interface DroppableProps {
   widthConfigButton?: boolean;
 }
 
-export function SortableItem(props) {
+interface SortableItemProps {
+  id: string | number;
+}
+
+export function SortableItem(props: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
 

@@ -17,10 +17,6 @@ import { useThemeMode } from "~/store/themeStore";
 
 export default function WidgetModalContent() {
   const [currentType, setCurrentType] = React.useState<string>("list");
-  console.log(
-    "🚀 ~ WidgetModalContent.tsx:19 ~ WidgetModalContent ~ currentType:",
-    currentType
-  );
 
   const widthOrder: Record<"xs" | "sm" | "md" | "lg", number> = {
     xs: 1,
@@ -38,6 +34,12 @@ export default function WidgetModalContent() {
     width?: "xs" | "sm" | "md" | "lg";
   }>("widgetsModal");
 
+  interface Widget {
+    id: string;
+    widget_type: string;
+    min_width: "xs" | "sm" | "md" | "lg";
+  }
+
   const filteredWidgets = WidgetsList.filter((widget) => {
     const widgetMinWidth = widget.min_width as "xs" | "sm" | "md" | "lg";
     const columnWidth = detail?.width ?? "xs";
@@ -46,12 +48,12 @@ export default function WidgetModalContent() {
       widget.widget_type === currentType &&
       widthOrder[columnWidth] >= widthOrder[widgetMinWidth]
     );
-  });
+  }) as Widget[];
 
-  const handleSelectWidget = (widget) => {
+  const handleSelectWidget = (widget: Widget): void => {
     if (!detail) return;
 
-    addWidgetToColumn(detail.columnId, widget);
+    addWidgetToColumn(detail.columnId, widget.id);
 
     closeWidgetsModal();
   };
