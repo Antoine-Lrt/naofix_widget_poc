@@ -4,9 +4,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build && tsc --noEmit false",
-    "start": "vite start"
+    "dev": "vite",
+    "build": "tsc --skipLibCheck && vite build",
+    "start": "vite preview"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
