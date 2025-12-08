@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as NotavailableRouteImport } from './routes/notavailable'
 import { Route as Module_selectRouteImport } from './routes/module_select'
 import { Route as Layout_creatorRouteImport } from './routes/layout_creator'
+import { Route as Api_storeRouteImport } from './routes/api_store'
 import { Route as IndexRouteImport } from './routes/index'
 
 const NotavailableRoute = NotavailableRouteImport.update({
@@ -29,6 +30,11 @@ const Layout_creatorRoute = Layout_creatorRouteImport.update({
   path: '/layout_creator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Api_storeRoute = Api_storeRouteImport.update({
+  id: '/api_store',
+  path: '/api_store',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api_store': typeof Api_storeRoute
   '/layout_creator': typeof Layout_creatorRoute
   '/module_select': typeof Module_selectRoute
   '/notavailable': typeof NotavailableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api_store': typeof Api_storeRoute
   '/layout_creator': typeof Layout_creatorRoute
   '/module_select': typeof Module_selectRoute
   '/notavailable': typeof NotavailableRoute
@@ -50,20 +58,38 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api_store': typeof Api_storeRoute
   '/layout_creator': typeof Layout_creatorRoute
   '/module_select': typeof Module_selectRoute
   '/notavailable': typeof NotavailableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/layout_creator' | '/module_select' | '/notavailable'
+  fullPaths:
+    | '/'
+    | '/api_store'
+    | '/layout_creator'
+    | '/module_select'
+    | '/notavailable'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/layout_creator' | '/module_select' | '/notavailable'
-  id: '__root__' | '/' | '/layout_creator' | '/module_select' | '/notavailable'
+  to:
+    | '/'
+    | '/api_store'
+    | '/layout_creator'
+    | '/module_select'
+    | '/notavailable'
+  id:
+    | '__root__'
+    | '/'
+    | '/api_store'
+    | '/layout_creator'
+    | '/module_select'
+    | '/notavailable'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  Api_storeRoute: typeof Api_storeRoute
   Layout_creatorRoute: typeof Layout_creatorRoute
   Module_selectRoute: typeof Module_selectRoute
   NotavailableRoute: typeof NotavailableRoute
@@ -92,6 +118,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Layout_creatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_store': {
+      id: '/api_store'
+      path: '/api_store'
+      fullPath: '/api_store'
+      preLoaderRoute: typeof Api_storeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +137,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  Api_storeRoute: Api_storeRoute,
   Layout_creatorRoute: Layout_creatorRoute,
   Module_selectRoute: Module_selectRoute,
   NotavailableRoute: NotavailableRoute,

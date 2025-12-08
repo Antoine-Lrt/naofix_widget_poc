@@ -1,22 +1,31 @@
-import React, { ReactNode } from "react";
-import { useDroppable } from "@dnd-kit/core";
+import React, { ReactNode, useState } from "react";
 import {
-  Box,
-  Button,
-  Chip,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from "@mui/material";
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { Box, Chip, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
-import { Add, Height, ViewModule, Widgets } from "@mui/icons-material";
+import { Add, Height } from "@mui/icons-material";
 import { LayoutColumn, updateColumnWidth } from "~/store/layoutStore";
 import { radiusMap } from "~/helpers/radiusMap";
 import { useThemeMode } from "~/store/themeStore";
 import { useModal } from "~/store/modalStore";
 import { getColumnsWidthOptionsMap } from "~/utils/getColumnsWidthOptionsMap";
-
+import ListDesktopMd from "./widgets/List/catalog/desktop/List.desktop.md";
 interface DroppableProps {
   column: {
     id: string;
@@ -29,6 +38,22 @@ interface DroppableProps {
   widthConfigButton?: boolean;
 }
 
+export function SortableItem(props) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: props.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div style={style} ref={setNodeRef} {...attributes} {...listeners}>
+      <ListDesktopMd id={props.id} />
+    </div>
+  );
+}
+
 export function WidgetsContainer({
   column,
   columnIndex,
@@ -36,6 +61,15 @@ export function WidgetsContainer({
   children,
   widthConfigButton,
 }: DroppableProps) {
+  const [items, setItems] = useState([1, 2, 3]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [currentColumInfos, setCurrentColumInfos] = React.useState<null | {
     id: string;
@@ -72,6 +106,18 @@ export function WidgetsContainer({
     });
   };
 
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
   return (
     <Stack spacing={1}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -105,20 +151,31 @@ export function WidgetsContainer({
         </Box>
       </Stack>
 
-      <Box
-        ref={setNodeRef}
-        sx={{
-          minHeight: 400,
-          p: 2.5,
-          borderRadius: radiusMap[borderRadius],
-          bgcolor: isOver ? "primary.50" : "transparent",
-          border: "2px dashed",
-          borderColor: isOver ? "primary.main" : "divider",
-          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
       >
-        {children}
-      </Box>
+        <Box
+          ref={setNodeRef}
+          sx={{
+            minHeight: 400,
+            p: 2.5,
+            borderRadius: radiusMap[borderRadius],
+            bgcolor: isOver ? "primary.50" : "transparent",
+            border: "2px dashed",
+            borderColor: isOver ? "primary.main" : "divider",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+            {items.map((id) => (
+              <SortableItem key={id} id={id} />
+            ))}
+          </SortableContext>
+        </Box>
+      </DndContext>
 
       {widthConfigButton && (
         <>

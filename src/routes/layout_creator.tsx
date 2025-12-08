@@ -290,8 +290,8 @@ function RouteComponent() {
                             columnIndex={columnIndex}
                             rowIndex={rowIndex}
                             widthConfigButton={columnsCount > 1}
-                          >
-                            {column.widgets &&
+                          />
+                          {/* {column.widgets &&
                               !isEmpty(column.widgets) &&
                               column.widgets.map((widget, index) => {
                                 return (
@@ -372,15 +372,15 @@ function RouteComponent() {
                                     </Box>
                                   </Card>
                                 );
-                              })}
-                            <AddWidgetInfo />
+                              })} */}
+                          {/* <AddWidgetInfo /> */}
 
-                            {/* {parent === column.id && activeId === null ? (
+                          {/* {parent === column.id && activeId === null ? (
                               draggableMarkup
                             ) : (
                             )}
                             */}
-                          </WidgetsContainer>
+                          {/* </WidgetsContainer> */}
                         </Grid>
                       );
                     })}

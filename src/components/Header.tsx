@@ -8,6 +8,7 @@ import {
   Menu,
   MenuItem,
   Stack,
+  Link,
   Toolbar,
   css,
   styled,
@@ -36,7 +37,7 @@ import {
   updateLayoutModelName,
   updateLayoutDevice,
 } from "~/store/layoutStore";
-import { useMatchRoute } from "@tanstack/react-router";
+import { useMatchRoute, Link as RouterLink } from "@tanstack/react-router";
 import { deviceTypes, models, modules, viewTypes } from "~/mock";
 import { DRAWER_WIDTH } from "~/constant/layoutConstants";
 import { useModal } from "~/store/modalStore";
@@ -147,6 +148,17 @@ const CreatorPageToolComponent = () => {
 
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
+      <Box>
+        <Link
+          component={RouterLink}
+          to="/api_store"
+          underline="none"
+          sx={{ color: "primary.main" }}
+        >
+          Test du Système API
+        </Link>
+      </Box>
+      <Divider />
       <Box>
         <Button
           variant="contained"

@@ -1,4 +1,4 @@
-import ListDesktopMD from "./desktop/List.desktop.md";
+import ListDesktopMD from "./catalog/desktop/List.desktop.md";
 
 // Desktop Variants
 export const ListWidgetComponents = {

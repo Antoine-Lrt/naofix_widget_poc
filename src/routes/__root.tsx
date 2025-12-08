@@ -8,6 +8,8 @@ import {
   useMatchRoute,
 } from "@tanstack/react-router";
 import { CacheProvider } from "@emotion/react";
+import { QueryClientProvider } from "@tanstack/react-query";
+
 import {
   Box,
   Card,
@@ -54,6 +56,7 @@ import {
   WarningWidgetsModal,
   WidgetsModal,
 } from "~/components/Modals/custom";
+import { queryClient } from "~/services/queryClient";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -73,13 +76,16 @@ function RootComponent() {
 function Providers({ children }: { children: React.ReactNode }) {
   const emotionCache = createCache({ key: "css" });
   const { mode } = useThemeMode();
+
   return (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={getTheme(mode)}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </CacheProvider>
+    <QueryClientProvider client={queryClient}>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={getTheme(mode)}>
+          <CssBaseline />
+          {children}
+        </ThemeProvider>
+      </CacheProvider>
+    </QueryClientProvider>
   );
 }
 
